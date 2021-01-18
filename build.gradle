@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.4.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id "org.flywaydb.flyway" version "6.5.1"
 }
 
 group = 'com.parking'
@@ -20,10 +21,25 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.flywaydb:flyway-core'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+def userManagementJdbc = [
+		driver           : 'org.mysql.Driver',
+		url              : 'jdbc:mysql://localhost:3306/parking?currentSchema=parking&ssl=false',
+		user             : 'root',
+		password         : '12345',
+		schema           : 'parking',
+]
+
+flyway {
+	url = userManagementJdbc.url
+	user = userManagementJdbc.user
+	password = userManagementJdbc.password
+	schemas = [userManagementJdbc.schema]
 }
 
 test {

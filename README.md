@@ -1,4 +1,4 @@
-# Parking*Lot
+# Parking Lot
 ###这是一个训练项目，完成停车场相关功能，项目tasking如下：  
 ###数据库部分：  
 数据库选用  
