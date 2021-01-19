@@ -12,9 +12,10 @@ import com.parking.lot.repository.TicketRepository;
 import java.text.ParseException;
 import java.util.Optional;
 import javassist.NotFoundException;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ParkingService {
@@ -28,7 +29,7 @@ public class ParkingService {
     this.ticketRepository = ticketRepository;
   }
 
-  @Transactional
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public Ticket parkingCar(String parkingId) throws OverSizeException, NotFoundException {
     Parking parking = getCurrentPart(parkingId);
     parking.checkSize();
@@ -51,6 +52,7 @@ public class ParkingService {
     throw new NotFoundException(ExceptionMessage.NOT_FOUND_PARKING.getMessage());
   }
 
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public void takeCar(String ticketId)
       throws NotFoundException, illegalTicketException, ParseException {
     Ticket ticket = getCurrentTicket(ticketId);
