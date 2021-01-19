@@ -22,16 +22,19 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 class ParkingServiceTest {
+
   ParkingService parkingService;
   @Mock
   TicketRepository ticketRepository;
   @Mock
   ParkingRepository parkingRepository;
+
   @BeforeEach
   void setUp() {
     openMocks(this);
-    parkingService = new ParkingService(parkingRepository,ticketRepository);
+    parkingService = new ParkingService(parkingRepository, ticketRepository);
   }
+
   @Test
   void should_get_ticket_and_reduce_size_when_park_car() throws NotFoundException {
     Parking parking = getParking();
@@ -39,7 +42,7 @@ class ParkingServiceTest {
     when(parkingRepository.findById(parking.getId())).thenReturn(Optional.of(parking));
     Ticket returnTicket = parkingService.parkingCar(parking.getId());
     assertNotNull(returnTicket);
-    assertEquals(parkingEmptyNum - 1,parking.getSize());
+    assertEquals(parkingEmptyNum - 1, parking.getSize());
   }
 
   @Test
@@ -47,7 +50,7 @@ class ParkingServiceTest {
     when(parkingRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundException.class,
-        () -> parkingService.parkingCar("123"),"not found parking");
+        () -> parkingService.parkingCar("123"), "not found parking");
   }
 
   @Test
@@ -68,7 +71,7 @@ class ParkingServiceTest {
     when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
     parkingService.takeCar("123");
-    assertEquals(parkingEmptyNum + 1,parking.getSize());
+    assertEquals(parkingEmptyNum + 1, parking.getSize());
   }
 
   @Test
@@ -76,7 +79,7 @@ class ParkingServiceTest {
     when(ticketRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundException.class,
-        () -> parkingService.takeCar("123"),"not found ticket");
+        () -> parkingService.takeCar("123"), "not found ticket");
   }
 
   @Test

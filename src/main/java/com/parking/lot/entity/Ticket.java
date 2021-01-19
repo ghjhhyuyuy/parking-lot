@@ -14,11 +14,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Ticket {
+
+  final static int ticket_time = 3600000;
   String id;
   String timeoutDate;
   String parkingLotId;
-
-  final static int ticket_time = 3600000;
 
   public static Ticket getTicket(String parkingLotId) {
     Date date = new Date(System.currentTimeMillis() + ticket_time);
