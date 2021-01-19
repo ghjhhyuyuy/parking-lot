@@ -1,4 +1,6 @@
 spring:
-    jpa:
-        hibernate:
-            ddl-auto: create
+    datasource:
+        url: jdbc:mysql://localhost:3306/parking?characterEncoding=UTF-8
+        username: root
+        password: 12345
+        driver-class-name: com.mysql.jdbc.Driver

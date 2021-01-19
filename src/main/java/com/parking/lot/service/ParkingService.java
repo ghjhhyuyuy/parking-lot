@@ -13,14 +13,16 @@ import java.text.ParseException;
 import java.util.Optional;
 import javassist.NotFoundException;
 import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ParkingService {
 
-  final ParkingRepository parkingRepository;
-  final TicketRepository ticketRepository;
+  private final ParkingRepository parkingRepository;
+  private final TicketRepository ticketRepository;
 
+  @Autowired
   public ParkingService(ParkingRepository parkingRepository, TicketRepository ticketRepository) {
     this.parkingRepository = parkingRepository;
     this.ticketRepository = ticketRepository;
