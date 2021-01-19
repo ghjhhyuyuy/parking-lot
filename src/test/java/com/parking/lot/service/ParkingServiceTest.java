@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.TicketRepository;
@@ -29,10 +30,16 @@ class ParkingServiceTest {
   @Test
   void should_get_ticket_when_park_car(){
     Ticket ticket = getTicket();
+    Parking parking = getParking();
+    int parkingEmpty = parking.getSize();
     when(ticketRepository.save(ticket)).thenReturn(ticket);
-    Ticket returnTicket = parkingService.parkingCar();
+    Ticket returnTicket = parkingService.parkingCar(parking);
     assertEquals(ticket,returnTicket);
-    verify(parkingRepository).save(any());
+    assertEquals(parkingEmpty,parking.getSize());
+  }
+
+  private Parking getParking() {
+    return Parking.builder().id(UUID.randomUUID().toString()).size(20).build();
   }
 
   private Ticket getTicket() {
