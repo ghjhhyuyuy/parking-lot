@@ -24,37 +24,57 @@ public class ParkingService {
     this.parkingRepository = parkingRepository;
     this.ticketRepository = ticketRepository;
   }
+
   @Transactional
   public Ticket parkingCar(String parkingId) throws OverSizeException, NotFoundException {
+    Parking parking = getCurrentPart(parkingId);
+    parking.checkSize();
+    return parkingCarInPark(parking);
+  }
+
+  private Ticket parkingCarInPark(Parking parking) {
+    Ticket ticket = getTicket(parking.getId());
+    ticketRepository.save(ticket);
+    parking.reduceSize();
+    parkingRepository.save(parking);
+    return ticket;
+  }
+
+  private Parking getCurrentPart(String parkingId) throws NotFoundException {
     Optional<Parking> optionalParking = parkingRepository.findById(parkingId);
     if (optionalParking.isPresent()) {
-      Parking parking = optionalParking.get();
-      parking.checkSize();
-      Ticket ticket = getTicket(parkingId);
-      ticketRepository.save(ticket);
-      parking.reduceSize();
-      parkingRepository.save(parking);
-      return ticket;
+      return optionalParking.get();
     }
     throw new NotFoundException("not found parking");
   }
 
   public void takeCar(String ticketId)
       throws NotFoundException, illegalTicketException, ParseException {
+    Ticket ticket = getCurrentTicket(ticketId);
+    if (ticket.checkTicket()) {
+      takeCarFromPark(ticket);
+    } else {
+      throw new illegalTicketException();
+    }
+  }
+
+  private Ticket getCurrentTicket(String ticketId) throws NotFoundException {
     Optional<Ticket> optionalTicket = ticketRepository.findById(ticketId);
     if (optionalTicket.isPresent()) {
-      Ticket ticket = optionalTicket.get();
-      if(ticket.checkTicket()){
-        Optional<Parking> optionalParking = parkingRepository.findById(ticket.getParkingLotId());
-        if(optionalParking.isPresent()){
-          Parking parking = optionalParking.get();
-          parkingRepository.save(parking);
-        }
-      }else {
-        throw new illegalTicketException();
-      }
-    }else {
+      return optionalTicket.get();
+    } else {
       throw new NotFoundException("not found ticket");
+    }
+  }
+
+  private void takeCarFromPark(Ticket ticket) throws NotFoundException {
+    Optional<Parking> optionalParking = parkingRepository.findById(ticket.getParkingLotId());
+    if (optionalParking.isPresent()) {
+      Parking parking = optionalParking.get();
+      parking.upSize();
+      parkingRepository.save(parking);
+    } else {
+      throw new NotFoundException("not found parking");
     }
   }
 }
