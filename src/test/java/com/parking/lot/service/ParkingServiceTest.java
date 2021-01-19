@@ -47,9 +47,7 @@ class ParkingServiceTest {
     when(parkingRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundException.class,
-        () -> {
-          parkingService.parkingCar("123");
-        },"not found parking");
+        () -> parkingService.parkingCar("123"),"not found parking");
   }
 
   @Test
@@ -58,9 +56,7 @@ class ParkingServiceTest {
     when(parkingRepository.findById(parking.getId())).thenReturn(Optional.of(parking));
     assertThrows(
         OverSizeException.class,
-        () -> {
-          parkingService.parkingCar(parking.getId());
-        });
+        () -> parkingService.parkingCar(parking.getId()));
   }
 
   @Test
