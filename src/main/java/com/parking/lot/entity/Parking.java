@@ -1,5 +1,6 @@
 package com.parking.lot.entity;
 
+import com.parking.lot.exception.OverSizeException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,5 +16,11 @@ public class Parking {
 
   public void reduceSize() {
     this.size--;
+  }
+  public void checkSize() {
+    if (this.size > 0) {
+      return;
+    }
+    throw new OverSizeException();
   }
 }
