@@ -1,5 +1,6 @@
 package com.parking.lot.entity;
 
+import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.OverSizeException;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.persistence.Entity;
@@ -36,6 +37,6 @@ public class Parking {
     if (this.size > 0) {
       return;
     }
-    throw new OverSizeException();
+    throw new OverSizeException(ExceptionMessage.PARKING_OVER_SIZE);
   }
 }

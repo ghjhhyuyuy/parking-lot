@@ -2,11 +2,11 @@ package com.parking.lot.exception;
 
 import com.parking.lot.enums.ExceptionMessage;
 
-public class OverSizeException extends RuntimeException {
+public class NotFoundResourceException extends Throwable {
 
   private final ExceptionMessage exceptionMessage;
 
-  public OverSizeException(ExceptionMessage exceptionMessage) {
+  public NotFoundResourceException(ExceptionMessage exceptionMessage) {
     this.exceptionMessage = exceptionMessage;
   }
 

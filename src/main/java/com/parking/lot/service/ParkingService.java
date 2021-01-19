@@ -5,13 +5,13 @@ import static com.parking.lot.entity.Ticket.getTicket;
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.enums.ExceptionMessage;
+import com.parking.lot.exception.IllegalTicketException;
+import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.OverSizeException;
-import com.parking.lot.exception.illegalTicketException;
 import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.TicketRepository;
 import java.text.ParseException;
 import java.util.Optional;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -30,7 +30,8 @@ public class ParkingService {
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
-  public Ticket parkingCar(String parkingId) throws OverSizeException, NotFoundException {
+  public Ticket parkingCar(String parkingId)
+      throws OverSizeException, NotFoundResourceException {
     Parking parking = getCurrentPart(parkingId);
     parking.checkSize();
     return parkingCarInPark(parking);
@@ -44,42 +45,42 @@ public class ParkingService {
     return ticket;
   }
 
-  private Parking getCurrentPart(String parkingId) throws NotFoundException {
+  private Parking getCurrentPart(String parkingId) throws NotFoundResourceException {
     Optional<Parking> optionalParking = parkingRepository.findById(parkingId);
     if (optionalParking.isPresent()) {
       return optionalParking.get();
     }
-    throw new NotFoundException(ExceptionMessage.NOT_FOUND_PARKING.getMessage());
+    throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING);
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public void takeCar(String ticketId)
-      throws NotFoundException, illegalTicketException, ParseException {
+      throws IllegalTicketException, ParseException, NotFoundResourceException {
     Ticket ticket = getCurrentTicket(ticketId);
     if (ticket.checkTicket()) {
       takeCarFromPark(ticket);
     } else {
-      throw new illegalTicketException();
+      throw new IllegalTicketException(ExceptionMessage.ILLEGAL_TICKET);
     }
   }
 
-  private Ticket getCurrentTicket(String ticketId) throws NotFoundException {
+  private Ticket getCurrentTicket(String ticketId) throws NotFoundResourceException {
     Optional<Ticket> optionalTicket = ticketRepository.findById(ticketId);
     if (optionalTicket.isPresent()) {
       return optionalTicket.get();
     } else {
-      throw new NotFoundException(ExceptionMessage.NOT_FOUND_TICKET.getMessage());
+      throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_TICKET);
     }
   }
 
-  private void takeCarFromPark(Ticket ticket) throws NotFoundException {
+  private void takeCarFromPark(Ticket ticket) throws NotFoundResourceException {
     Optional<Parking> optionalParking = parkingRepository.findById(ticket.getParkingLotId());
     if (optionalParking.isPresent()) {
       Parking parking = optionalParking.get();
       parking.upSize();
       parkingRepository.save(parking);
     } else {
-      throw new NotFoundException(ExceptionMessage.NOT_FOUND_PARKING.getMessage());
+      throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING);
     }
   }
 }

@@ -10,8 +10,9 @@ import static org.mockito.MockitoAnnotations.openMocks;
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.enums.ExceptionMessage;
+import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.OverSizeException;
-import com.parking.lot.exception.illegalTicketException;
+import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.TicketRepository;
 import java.text.ParseException;
@@ -37,7 +38,8 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_get_ticket_and_reduce_size_when_park_car() throws NotFoundException {
+  void should_get_ticket_and_reduce_size_when_park_car()
+      throws NotFoundResourceException {
     Parking parking = getParking();
     int parkingEmptyNum = parking.getSize();
     when(parkingRepository.findById(parking.getId())).thenReturn(Optional.of(parking));
@@ -66,7 +68,7 @@ class ParkingServiceTest {
 
   @Test
   void should_add_park_size_when_give_right_ticket()
-      throws ParseException, illegalTicketException, NotFoundException {
+      throws ParseException, IllegalTicketException, NotFoundResourceException {
     Ticket ticket = getRightTicket();
     Parking parking = getParking();
     int parkingEmptyNum = parking.getSize();
@@ -91,7 +93,7 @@ class ParkingServiceTest {
     when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
     assertThrows(
-        illegalTicketException.class,
+        IllegalTicketException.class,
         () -> parkingService.takeCar("123"));
   }
 
