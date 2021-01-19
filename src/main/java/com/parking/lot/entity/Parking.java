@@ -12,4 +12,8 @@ import lombok.NoArgsConstructor;
 public class Parking {
   String id;
   int size;
+
+  public void reduceSize() {
+    this.size--;
+  }
 }
