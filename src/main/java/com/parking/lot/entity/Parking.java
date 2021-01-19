@@ -17,6 +17,9 @@ public class Parking {
   public void reduceSize() {
     this.size--;
   }
+  public void upSize() {
+    this.size++;
+  }
   public void checkSize() {
     if (this.size > 0) {
       return;
