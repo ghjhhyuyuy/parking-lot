@@ -43,7 +43,7 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_throw_NotFoundException_when_not_found_park() {
+  void should_throw_notFoundException_when_not_found_park() {
     when(parkingRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundException.class,
@@ -51,7 +51,7 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_throw_OverSizeException_when_over_park_size() {
+  void should_throw_overSizeException_when_over_park_size() {
     Parking parking = getFullParking();
     when(parkingRepository.findById(parking.getId())).thenReturn(Optional.of(parking));
     assertThrows(
@@ -69,6 +69,33 @@ class ParkingServiceTest {
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
     parkingService.takeCar("123");
     assertEquals(parkingEmptyNum + 1,parking.getSize());
+  }
+
+  @Test
+  void should_throw_notFoundException_when_not_found_ticket() {
+    when(ticketRepository.findById(anyString())).thenReturn(Optional.empty());
+    assertThrows(
+        NotFoundException.class,
+        () -> parkingService.takeCar("123"),"not found ticket");
+  }
+
+  @Test
+  void should_throw_illegalTicketException_when_not_right_ticket() {
+    Ticket ticket = getWrongTicket();
+    Parking parking = getParking();
+    when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
+    when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
+    assertThrows(
+        illegalTicketException.class,
+        () -> parkingService.takeCar("123"));
+  }
+
+  private Ticket getWrongTicket() {
+    return Ticket.builder()
+        .id(UUID.randomUUID().toString())
+        .parkingLotId("123")
+        .timeoutDate("2021-01-18 20:20:20")
+        .build();
   }
 
   private Ticket getRightTicket() {
