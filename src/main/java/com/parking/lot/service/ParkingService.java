@@ -4,6 +4,7 @@ import static com.parking.lot.entity.Ticket.getTicket;
 
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
+import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.exception.illegalTicketException;
 import com.parking.lot.repository.ParkingRepository;
@@ -45,7 +46,7 @@ public class ParkingService {
     if (optionalParking.isPresent()) {
       return optionalParking.get();
     }
-    throw new NotFoundException("not found parking");
+    throw new NotFoundException(ExceptionMessage.NOT_FOUND_PARKING.getMessage());
   }
 
   public void takeCar(String ticketId)
@@ -63,7 +64,7 @@ public class ParkingService {
     if (optionalTicket.isPresent()) {
       return optionalTicket.get();
     } else {
-      throw new NotFoundException("not found ticket");
+      throw new NotFoundException(ExceptionMessage.NOT_FOUND_TICKET.getMessage());
     }
   }
 
@@ -74,7 +75,7 @@ public class ParkingService {
       parking.upSize();
       parkingRepository.save(parking);
     } else {
-      throw new NotFoundException("not found parking");
+      throw new NotFoundException(ExceptionMessage.NOT_FOUND_PARKING.getMessage());
     }
   }
 }

@@ -9,6 +9,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
+import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.exception.illegalTicketException;
 import com.parking.lot.repository.ParkingRepository;
@@ -50,7 +51,8 @@ class ParkingServiceTest {
     when(parkingRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundException.class,
-        () -> parkingService.parkingCar("123"), "not found parking");
+        () -> parkingService.parkingCar("123"),
+        ExceptionMessage.NOT_FOUND_PARKING.getMessage());
   }
 
   @Test
@@ -79,7 +81,7 @@ class ParkingServiceTest {
     when(ticketRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundException.class,
-        () -> parkingService.takeCar("123"), "not found ticket");
+        () -> parkingService.takeCar("123"), ExceptionMessage.NOT_FOUND_TICKET.getMessage());
   }
 
   @Test
