@@ -46,7 +46,10 @@ public class ParkingService {
       Ticket ticket = optionalTicket.get();
       if(ticket.checkTicket()){
         Optional<Parking> optionalParking = parkingRepository.findById(ticket.getParkingLotId());
-        optionalParking.ifPresent(Parking::upSize);
+        if(optionalParking.isPresent()){
+          Parking parking = optionalParking.get();
+          parkingRepository.save(parking);
+        }
       }else {
         throw new illegalTicketException();
       }
