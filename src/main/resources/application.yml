@@ -3,4 +3,6 @@ spring:
         url: jdbc:mysql://localhost:3306/parking?characterEncoding=UTF-8
         username: root
         password: 12345
-        driver-class-name: com.mysql.jdbc.Driver
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        open-in-view: false
