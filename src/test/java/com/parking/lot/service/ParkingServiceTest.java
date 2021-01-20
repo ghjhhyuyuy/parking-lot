@@ -18,7 +18,6 @@ import com.parking.lot.repository.TicketRepository;
 import java.text.ParseException;
 import java.util.Optional;
 import java.util.UUID;
-import javassist.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -52,7 +51,7 @@ class ParkingServiceTest {
   void should_throw_notFoundException_when_not_found_park() {
     when(parkingRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
-        NotFoundException.class,
+        NotFoundResourceException.class,
         () -> parkingService.parkingCar("123"),
         ExceptionMessage.NOT_FOUND_PARKING.getMessage());
   }
@@ -82,7 +81,7 @@ class ParkingServiceTest {
   void should_throw_notFoundException_when_not_found_ticket() {
     when(ticketRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
-        NotFoundException.class,
+        NotFoundResourceException.class,
         () -> parkingService.takeCar("123"), ExceptionMessage.NOT_FOUND_TICKET.getMessage());
   }
 
