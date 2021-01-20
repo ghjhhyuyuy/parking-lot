@@ -2,15 +2,10 @@ package com.parking.lot.exception;
 
 import com.parking.lot.enums.ExceptionMessage;
 
-public class NotFoundResourceException extends Throwable {
+public class NotFoundResourceException extends MyException {
 
-  private final ExceptionMessage exceptionMessage;
 
   public NotFoundResourceException(ExceptionMessage exceptionMessage) {
-    this.exceptionMessage = exceptionMessage;
-  }
-
-  public ExceptionMessage getExceptionMessage() {
-    return this.exceptionMessage;
+    super(exceptionMessage);
   }
 }
