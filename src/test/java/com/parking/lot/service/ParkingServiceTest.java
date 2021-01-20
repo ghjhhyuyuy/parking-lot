@@ -7,16 +7,21 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-import com.parking.lot.CommonMethod;
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
+import com.parking.lot.entity.User;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.NotFoundResourceException;
+import com.parking.lot.exception.NotPartingHelperException;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.TicketRepository;
+import com.parking.lot.repository.UserRepository;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,17 +35,23 @@ class ParkingServiceTest {
   TicketRepository ticketRepository;
   @Mock
   ParkingRepository parkingRepository;
+  @Mock
+  UserRepository userRepository;
+
+  public static Parking getParking() {
+    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").size(20).build();
+  }
 
   @BeforeEach
   void setUp() {
     openMocks(this);
-    parkingService = new ParkingService(parkingRepository, ticketRepository);
+    parkingService = new ParkingService(parkingRepository, ticketRepository, userRepository);
   }
 
   @Test
   void should_get_ticket_and_reduce_size_when_park_car()
       throws NotFoundResourceException {
-    Parking parking = CommonMethod.getParking();
+    Parking parking = getParking();
     int parkingEmptyNum = parking.getSize();
     when(parkingRepository.findById(parking.getId())).thenReturn(Optional.of(parking));
     Ticket returnTicket = parkingService.parkingCar(parking.getId());
@@ -70,7 +81,7 @@ class ParkingServiceTest {
   void should_add_park_size_when_give_right_ticket()
       throws ParseException, IllegalTicketException, NotFoundResourceException {
     Ticket ticket = getRightTicket();
-    Parking parking = CommonMethod.getParking();
+    Parking parking = getParking();
     int parkingEmptyNum = parking.getSize();
     when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
@@ -89,12 +100,28 @@ class ParkingServiceTest {
   @Test
   void should_throw_illegalTicketException_when_not_right_ticket() {
     Ticket ticket = getWrongTicket();
-    Parking parking = CommonMethod.getParking();
+    Parking parking = getParking();
     when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
     assertThrows(
         IllegalTicketException.class,
         () -> parkingService.takeCar("123"));
+  }
+
+  @Test
+  void should_get_all_parking_when_request()
+      throws NotPartingHelperException, NotFoundResourceException {
+    List<Parking> parkingList = getParkingList();
+    User user = getUser();
+    when(parkingRepository.findAll()).thenReturn(parkingList);
+    when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
+    List<Parking> parkings = parkingService.getAllParking(anyString());
+    assertEquals(parkings, parkingList);
+  }
+
+  private User getUser() {
+    return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
+        .createDate("2020-10-12 15:33:33").removeDate(null).role("1").build();
   }
 
   private Ticket getWrongTicket() {
@@ -111,6 +138,11 @@ class ParkingServiceTest {
         .parkingLotId("123")
         .timeoutDate("2021-01-20 20:20:20")
         .build();
+  }
+
+  private List<Parking> getParkingList() {
+    Parking parking = getParking();
+    return new ArrayList<>(Collections.nCopies(3, parking));
   }
 
   private Parking getFullParking() {
