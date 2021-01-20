@@ -13,6 +13,8 @@ import com.parking.lot.repository.TicketRepository;
 import java.text.ParseException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ public class ParkingService {
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
+  @Retryable(backoff = @Backoff(multiplier = 1.5))
   public Ticket parkingCar(String parkingId)
       throws OverSizeException, NotFoundResourceException {
     Parking parking = getCurrentPart(parkingId);
