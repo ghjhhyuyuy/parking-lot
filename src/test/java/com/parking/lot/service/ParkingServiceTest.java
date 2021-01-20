@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
+import com.parking.lot.CommonMethod;
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.enums.ExceptionMessage;
@@ -39,7 +40,7 @@ class ParkingServiceTest {
   @Test
   void should_get_ticket_and_reduce_size_when_park_car()
       throws NotFoundResourceException {
-    Parking parking = getParking();
+    Parking parking = CommonMethod.getParking();
     int parkingEmptyNum = parking.getSize();
     when(parkingRepository.findById(parking.getId())).thenReturn(Optional.of(parking));
     Ticket returnTicket = parkingService.parkingCar(parking.getId());
@@ -69,7 +70,7 @@ class ParkingServiceTest {
   void should_add_park_size_when_give_right_ticket()
       throws ParseException, IllegalTicketException, NotFoundResourceException {
     Ticket ticket = getRightTicket();
-    Parking parking = getParking();
+    Parking parking = CommonMethod.getParking();
     int parkingEmptyNum = parking.getSize();
     when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
@@ -88,7 +89,7 @@ class ParkingServiceTest {
   @Test
   void should_throw_illegalTicketException_when_not_right_ticket() {
     Ticket ticket = getWrongTicket();
-    Parking parking = getParking();
+    Parking parking = CommonMethod.getParking();
     when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
     assertThrows(
@@ -114,9 +115,5 @@ class ParkingServiceTest {
 
   private Parking getFullParking() {
     return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(0).build();
-  }
-
-  private Parking getParking() {
-    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").size(20).build();
   }
 }
