@@ -13,7 +13,7 @@ import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.enums.InstanseType;
 import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.NotFoundResourceException;
-import com.parking.lot.exception.NotPartingHelperException;
+import com.parking.lot.exception.NotParkingHelperException;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.TicketRepository;
@@ -47,7 +47,7 @@ public class ParkingService {
   @Retryable(backoff = @Backoff(multiplier = 1.5))
   public Ticket parkingCar(String parkingId)
       throws OverSizeException, NotFoundResourceException {
-    Parking parking = getCurrentPart(parkingId);
+    Parking parking = getCurrentPark(parkingId);
     parking.checkSize();
     return parkingCarInPark(parking);
   }
@@ -60,7 +60,7 @@ public class ParkingService {
     return ticket;
   }
 
-  private Parking getCurrentPart(String parkingId) throws NotFoundResourceException {
+  private Parking getCurrentPark(String parkingId) throws NotFoundResourceException {
     Optional<Parking> optionalParking = parkingRepository.findById(parkingId);
     if (optionalParking.isPresent()) {
       return optionalParking.get();
@@ -80,14 +80,14 @@ public class ParkingService {
   }
 
   public List<Parking> getAllParking(String userId)
-      throws NotPartingHelperException, NotFoundResourceException {
-    if (isPartingHelper(userId)) {
+      throws NotParkingHelperException, NotFoundResourceException {
+    if (isParkingHelper(userId)) {
       return parkingRepository.findAll();
     }
-    throw new NotPartingHelperException(ExceptionMessage.NOT_PARTING_HELPER);
+    throw new NotParkingHelperException(ExceptionMessage.NOT_PARKING_HELPER);
   }
 
-  private boolean isPartingHelper(String userId) throws NotFoundResourceException {
+  private boolean isParkingHelper(String userId) throws NotFoundResourceException {
     Optional<User> optionalUser = userRepository.findById(userId);
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();

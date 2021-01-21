@@ -13,7 +13,7 @@ import com.parking.lot.entity.User;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.NotFoundResourceException;
-import com.parking.lot.exception.NotPartingHelperException;
+import com.parking.lot.exception.NotParkingHelperException;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.TicketRepository;
@@ -110,7 +110,7 @@ class ParkingServiceTest {
 
   @Test
   void should_get_all_parking_when_request()
-      throws NotPartingHelperException, NotFoundResourceException {
+      throws NotParkingHelperException, NotFoundResourceException {
     List<Parking> parkingList = getParkingList();
     User user = getUser();
     when(parkingRepository.findAll()).thenReturn(parkingList);
