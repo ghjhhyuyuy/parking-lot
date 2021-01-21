@@ -204,6 +204,41 @@ class ParkingServiceTest {
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getSize());
   }
+  @Test
+  void should_parking_like_normal_helper_when_byOrderForManager_is_true_by_manager() {
+    User manager = getManager();
+    Role role = getManagerRole();
+    List<Parking> parkingList = getParkingListWithLargeParkingInLast();
+    int initNumber = parkingList.get(parkingList.size() - 1).getSize();
+    when(parkingRepository.findAll()).thenReturn(parkingList);
+    when(userRepository.findById(anyString())).thenReturn(Optional.of(manager));
+    when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
+    Ticket returnTicket = parkingService.helperSave(anyString(),true);
+    assertNotNull(returnTicket);
+    assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getSize());
+  }
+  @Test
+  void should_parking_like_smart_helper_when_byOrderForManager_is_false_by_manager() {
+    User manager = getManager();
+    Role role = getManagerRole();
+    List<Parking> parkingList = getParkingListWithLargeParkingInLast();
+    int initNumber = parkingList.get(parkingList.size() - 1).getSize();
+    when(parkingRepository.findAll()).thenReturn(parkingList);
+    when(userRepository.findById(anyString())).thenReturn(Optional.of(manager));
+    when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
+    Ticket returnTicket = parkingService.helperSave(anyString(),false);
+    assertNotNull(returnTicket);
+    assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getSize());
+  }
+
+  private Role getManagerRole() {
+    return Role.builder().role("MANGER").build();
+  }
+
+  private User getManager() {
+    return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
+        .createDate("2020-10-12 15:33:33").removeDate(null).role("3").build();
+  }
 
   @Test
   void should_throw_outOfSetException_when_given_full_parkings_with_smart_helper() {
