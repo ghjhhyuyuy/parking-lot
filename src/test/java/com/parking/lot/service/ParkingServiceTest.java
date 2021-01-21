@@ -161,7 +161,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.helperSave(anyString());
+    Ticket returnTicket = parkingService.helperSave(anyString(),false);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, parkingList.get(0).getSize());
   }
@@ -175,7 +175,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(emptyFistParkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.helperSave(anyString());
+    Ticket returnTicket = parkingService.helperSave(anyString(),false);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, emptyFistParkingList.get(1).getSize());
   }
@@ -200,7 +200,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.helperSave(anyString());
+    Ticket returnTicket = parkingService.helperSave(anyString(),false);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getSize());
   }
@@ -214,7 +214,7 @@ class ParkingServiceTest {
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     assertThrows(OutOfSetException.class,
-        () -> parkingService.helperSave(anyString()));
+        () -> parkingService.helperSave(anyString(),false));
   }
 
   private Role getSmartRole() {
@@ -230,7 +230,7 @@ class ParkingServiceTest {
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     assertThrows(OutOfSetException.class,
-        () -> parkingService.helperSave(anyString()));
+        () -> parkingService.helperSave(anyString(),false));
   }
 
   private List<Parking> getFullParkingList() {

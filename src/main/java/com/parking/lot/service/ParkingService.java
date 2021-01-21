@@ -130,10 +130,10 @@ public class ParkingService {
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   @Retryable(backoff = @Backoff(multiplier = 1.5))
-  public Ticket helperSave(String userId) {
+  public Ticket helperSave(String userId,boolean byOrderForManager) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
     List<Parking> parkings = getAllParking(userId);
-    Parking parking = parkingHelper.parking(parkings);
+    Parking parking = parkingHelper.parking(parkings,byOrderForManager);
     return parkingCarInPark(parking);
   }
 }

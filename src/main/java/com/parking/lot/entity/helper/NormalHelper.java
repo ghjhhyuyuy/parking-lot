@@ -11,7 +11,7 @@ public class NormalHelper extends ParkingHelper {
   AtomicInteger index = new AtomicInteger(0);
 
   @Override
-  public Parking parking(List<Parking> parkings) {
+  public Parking parking(List<Parking> parkings,boolean byOrderForManager) {
     if (parkings.size() <= index.get()) {
       resetIndex();
       throw new OutOfSetException(ExceptionMessage.OUT_OF_SET);
@@ -22,7 +22,7 @@ public class NormalHelper extends ParkingHelper {
       return parking;
     }
     index.incrementAndGet();
-    return parking(parkings);
+    return parking(parkings,byOrderForManager);
   }
 
   private void resetIndex() {

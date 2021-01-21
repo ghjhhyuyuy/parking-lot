@@ -11,7 +11,7 @@ public class ParkingHelper {
 
   final boolean isAllow = true;
 
-  public Parking parking(List<Parking> parkings) {
+  public Parking parking(List<Parking> parkings, boolean byOrderForManager) {
     System.out.println("not implementation in here");
     return null;
   }
