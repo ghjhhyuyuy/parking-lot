@@ -3,8 +3,10 @@ package com.parking.lot.handler;
 import com.parking.lot.entity.vo.Result;
 import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.MyException;
+import com.parking.lot.exception.NoMatchingRoleException;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.NotParkingHelperException;
+import com.parking.lot.exception.OutOfSetException;
 import com.parking.lot.exception.OverSizeException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,7 +17,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({OverSizeException.class, IllegalTicketException.class,
       NotFoundResourceException.class,
-      NotParkingHelperException.class})
+      NotParkingHelperException.class, OutOfSetException.class, NoMatchingRoleException.class})
   @ResponseBody
   public Result<Object> overSizeExceptionHandler(MyException e) {
     return Result.getExceptionResult(e.getExceptionMessage().getCode(),
