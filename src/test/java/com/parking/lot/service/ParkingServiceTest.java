@@ -10,6 +10,8 @@ import static org.mockito.MockitoAnnotations.openMocks;
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.User;
+import com.parking.lot.entity.helper.NormalHelper;
+import com.parking.lot.entity.helper.ParkingHelper;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.NoMatchingRoleException;
@@ -115,7 +117,7 @@ class ParkingServiceTest {
   void should_get_all_parking_when_request()
       throws NotParkingHelperException, NotFoundResourceException {
     List<Parking> parkingList = getParkingList();
-    User user = getUser();
+    User user = getNormalUser();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
     List<Parking> parkings = parkingService.getAllParking(anyString());
@@ -146,10 +148,16 @@ class ParkingServiceTest {
 
   @Test
   void should_get_parking_when_given_normal_helper(){
-
+    User normalHelper = getNormalUser();
+    List<Parking> parkingList = getParkingList();
+    int initNumber = parkingList.get(0).getSize();
+    when(parkingRepository.findAll()).thenReturn(parkingList);
+    when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
+    parkingService.helperSave(anyString());
+    assertEquals(initNumber - 1,parkingList.get(0).getSize());
   }
 
-  private User getUser() {
+  private User getNormalUser() {
     return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
         .createDate("2020-10-12 15:33:33").removeDate(null).role("1").build();
   }

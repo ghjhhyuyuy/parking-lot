@@ -82,18 +82,17 @@ public class ParkingService {
 
   public List<Parking> getAllParking(String userId)
       throws NotParkingHelperException, NotFoundResourceException {
-    if (isParkingHelper(userId)) {
+    if (getParkingHelper(userId).isAllow()) {
       return parkingRepository.findAll();
     }
     throw new NotParkingHelperException(ExceptionMessage.NOT_PARKING_HELPER);
   }
 
-  private boolean isParkingHelper(String userId) throws NotFoundResourceException {
+  private ParkingHelper getParkingHelper(String userId) throws NotFoundResourceException {
     Optional<User> optionalUser = userRepository.findById(userId);
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();
-      ParkingHelper parkingHelper = getInstanceById(user.getRole());
-      return parkingHelper.isAllow();
+      return getInstanceById(user.getRole());
     }
     throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER);
   }
@@ -127,5 +126,10 @@ public class ParkingService {
     } else {
       throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING);
     }
+  }
+
+  public void helperSave(String userId) {
+    ParkingHelper parkingHelper = getParkingHelper(userId);
+    throw new NotParkingHelperException(ExceptionMessage.NOT_PARKING_HELPER);
   }
 }
