@@ -169,7 +169,7 @@ class ParkingServiceTest {
 
   private List<Parking> getParkingListWithFirstEmpty() {
     Parking parking = getFullParking();
-    List<Parking> parkings = new ArrayList<>(Arrays.asList(parking));
+    List<Parking> parkings = new ArrayList<>(Collections.singletonList(parking));
     parkings.add(getParking());
     return parkings;
   }
