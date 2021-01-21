@@ -15,6 +15,7 @@ import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.NoMatchingRoleException;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.NotParkingHelperException;
+import com.parking.lot.exception.OutOfSetException;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.TicketRepository;
@@ -123,7 +124,7 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_throw_noMatchingRoleException_when_not_parking_helper(){
+  void should_throw_noMatchingRoleException_when_not_parking_helper() {
     User user = getNotParkingHelperUser();
     when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
     assertThrows(
@@ -137,7 +138,7 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_throw_notFoundResourceException_when_not_found_user(){
+  void should_throw_notFoundResourceException_when_not_found_user() {
     when(userRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundResourceException.class,
@@ -145,7 +146,7 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_reduce_first_parking_when_given_normal_helper_and_first_not_empty(){
+  void should_reduce_first_parking_when_given_normal_helper_and_first_not_empty() {
     User normalHelper = getNormalUser();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
     int initNumber = parkingList.get(0).getSize();
@@ -153,11 +154,11 @@ class ParkingServiceTest {
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     Ticket returnTicket = parkingService.helperSave(anyString());
     assertNotNull(returnTicket);
-    assertEquals(initNumber - 1,parkingList.get(0).getSize());
+    assertEquals(initNumber - 1, parkingList.get(0).getSize());
   }
 
   @Test
-  void should_reduce_second_parking_when_given_normal_helper_and_first_is_empty(){
+  void should_reduce_second_parking_when_given_normal_helper_and_first_is_empty() {
     User normalHelper = getNormalUser();
     List<Parking> emptyFistParkingList = getParkingListWithFirstEmpty();
     int initNumber = emptyFistParkingList.get(1).getSize();
@@ -165,7 +166,7 @@ class ParkingServiceTest {
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     Ticket returnTicket = parkingService.helperSave(anyString());
     assertNotNull(returnTicket);
-    assertEquals(initNumber - 1,emptyFistParkingList.get(1).getSize());
+    assertEquals(initNumber - 1, emptyFistParkingList.get(1).getSize());
   }
 
   private List<Parking> getParkingListWithFirstEmpty() {
@@ -176,7 +177,7 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_reduce_max_empty_parking_when_given_smart_helper(){
+  void should_reduce_max_empty_parking_when_given_smart_helper() {
     User smartHelper = getSmartUser();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
     int initNumber = parkingList.get(parkingList.size() - 1).getSize();
@@ -184,7 +185,32 @@ class ParkingServiceTest {
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
     Ticket returnTicket = parkingService.helperSave(anyString());
     assertNotNull(returnTicket);
-    assertEquals(initNumber - 1,parkingList.get(parkingList.size() - 1).getSize());
+    assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getSize());
+  }
+
+  @Test
+  void should_throw_outOfSetException_when_given_full_parkings_with_smart_helper() {
+    User smartHelper = getSmartUser();
+    List<Parking> parkingList = getFullParkingList();
+    when(parkingRepository.findAll()).thenReturn(parkingList);
+    when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
+    assertThrows(OutOfSetException.class,
+        () -> parkingService.helperSave(anyString()));
+  }
+
+  @Test
+  void should_throw_outOfSetException_when_given_full_parkings_with_normal_helper() {
+    User normalHelper = getNormalUser();
+    List<Parking> parkingList = getFullParkingList();
+    when(parkingRepository.findAll()).thenReturn(parkingList);
+    when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
+    assertThrows(OutOfSetException.class,
+        () -> parkingService.helperSave(anyString()));
+  }
+
+  private List<Parking> getFullParkingList() {
+    Parking parking = getFullParking();
+    return new ArrayList<>(Collections.nCopies(3, parking));
   }
 
   private User getSmartUser() {
