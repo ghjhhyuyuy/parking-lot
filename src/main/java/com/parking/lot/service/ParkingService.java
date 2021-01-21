@@ -130,6 +130,7 @@ public class ParkingService {
 
   public void helperSave(String userId) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
-    throw new NotParkingHelperException(ExceptionMessage.NOT_PARKING_HELPER);
+    List<Parking> parkings = getAllParking(userId);
+    parkingHelper.parking(parkings);
   }
 }
