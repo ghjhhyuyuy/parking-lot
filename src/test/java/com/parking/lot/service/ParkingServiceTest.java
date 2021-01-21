@@ -209,13 +209,13 @@ class ParkingServiceTest {
     User manager = getManager();
     Role role = getManagerRole();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
-    int initNumber = parkingList.get(parkingList.size() - 1).getSize();
+    int initNumber = parkingList.get(0).getSize();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(manager));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     Ticket returnTicket = parkingService.helperSave(anyString(),true);
     assertNotNull(returnTicket);
-    assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getSize());
+    assertEquals(initNumber - 1, parkingList.get(0).getSize());
   }
   @Test
   void should_parking_like_smart_helper_when_byOrderForManager_is_false_by_manager() {
