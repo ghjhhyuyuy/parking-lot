@@ -1,6 +1,12 @@
 package com.parking.lot.entity.helper;
 
-public class SmartHelper extends ParkingHelper{
+import com.parking.lot.entity.Parking;
+import java.util.List;
 
+public class SmartHelper extends ParkingHelper{
+  @Override
+  public void parking(List<Parking> parkings) {
+
+  }
 
 }

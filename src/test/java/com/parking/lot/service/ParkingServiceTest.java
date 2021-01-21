@@ -10,8 +10,6 @@ import static org.mockito.MockitoAnnotations.openMocks;
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.User;
-import com.parking.lot.entity.helper.NormalHelper;
-import com.parking.lot.entity.helper.ParkingHelper;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.NoMatchingRoleException;
@@ -116,7 +114,7 @@ class ParkingServiceTest {
   @Test
   void should_get_all_parking_when_request()
       throws NotParkingHelperException, NotFoundResourceException {
-    List<Parking> parkingList = getParkingList();
+    List<Parking> parkingList = getParkingListWithLargeParkingInLast();
     User user = getNormalUser();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
@@ -149,7 +147,7 @@ class ParkingServiceTest {
   @Test
   void should_get_parking_when_given_normal_helper(){
     User normalHelper = getNormalUser();
-    List<Parking> parkingList = getParkingList();
+    List<Parking> parkingList = getParkingListWithLargeParkingInLast();
     int initNumber = parkingList.get(0).getSize();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
@@ -160,12 +158,12 @@ class ParkingServiceTest {
   @Test
   void should_get_parking_when_given_smart_helper(){
     User smartHelper = getSmartUser();
-    List<Parking> parkingList = getParkingList();
-    int initNumber = parkingList.get(0).getSize();
+    List<Parking> parkingList = getParkingListWithLargeParkingInLast();
+    int initNumber = parkingList.get(parkingList.size() - 1).getSize();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
     parkingService.helperSave(anyString());
-    assertEquals(initNumber - 1,parkingList.get(0).getSize());
+    assertEquals(initNumber - 1,parkingList.get(parkingList.size() - 1).getSize());
   }
 
   private User getSmartUser() {
@@ -197,9 +195,15 @@ class ParkingServiceTest {
         .build();
   }
 
-  private List<Parking> getParkingList() {
+  private List<Parking> getParkingListWithLargeParkingInLast() {
     Parking parking = getParking();
-    return new ArrayList<>(Collections.nCopies(3, parking));
+    List<Parking> parkings = new ArrayList<>(Collections.nCopies(3, parking));
+    parkings.add(getLargeSizeParking());
+    return parkings;
+  }
+
+  private Parking getLargeSizeParking() {
+    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20000).build();
   }
 
   private Parking getFullParking() {
