@@ -157,6 +157,22 @@ class ParkingServiceTest {
     assertEquals(initNumber - 1,parkingList.get(0).getSize());
   }
 
+  @Test
+  void should_get_parking_when_given_smart_helper(){
+    User smartHelper = getSmartUser();
+    List<Parking> parkingList = getParkingList();
+    int initNumber = parkingList.get(0).getSize();
+    when(parkingRepository.findAll()).thenReturn(parkingList);
+    when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
+    parkingService.helperSave(anyString());
+    assertEquals(initNumber - 1,parkingList.get(0).getSize());
+  }
+
+  private User getSmartUser() {
+    return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
+        .createDate("2020-10-12 15:33:33").removeDate(null).role("2").build();
+  }
+
   private User getNormalUser() {
     return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
         .createDate("2020-10-12 15:33:33").removeDate(null).role("1").build();
