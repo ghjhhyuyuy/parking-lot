@@ -1,4 +1,4 @@
 INSERT INTO `role` (`id`, `role`)
-VALUES ('1', "normal helper"),
-       ('2', "smart helper"),
-       ('3', "manager");
+VALUES ('1', "NORMAL_HELPER"),
+       ('2', "SMART_HELPER"),
+       ('3', "MANGER");
