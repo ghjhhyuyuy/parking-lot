@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class Role {
+
   @Id
   String id;
   String role;

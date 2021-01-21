@@ -38,7 +38,7 @@ public class ParkingService {
 
   @Autowired
   public ParkingService(ParkingRepository parkingRepository, TicketRepository ticketRepository,
-      UserRepository userRepository,RoleRepository roleRepository) {
+      UserRepository userRepository, RoleRepository roleRepository) {
     this.parkingRepository = parkingRepository;
     this.ticketRepository = ticketRepository;
     this.userRepository = userRepository;
@@ -101,7 +101,7 @@ public class ParkingService {
 
   private ParkingHelper getParkingHelperByRoleId(String roleId) {
     Optional<Role> roleOptional = roleRepository.findById(roleId);
-    if(roleOptional.isPresent()){
+    if (roleOptional.isPresent()) {
       Role role = roleOptional.get();
       return RoleType.valueOf(role.getRole()).getParkingHelper();
     }
@@ -130,10 +130,10 @@ public class ParkingService {
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   @Retryable(backoff = @Backoff(multiplier = 1.5))
-  public Ticket helperSave(String userId,boolean byOrderForManager) {
+  public Ticket helperSave(String userId, boolean byOrderForManager) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
     List<Parking> parkings = getAllParking(userId);
-    Parking parking = parkingHelper.parking(parkings,byOrderForManager);
+    Parking parking = parkingHelper.parking(parkings, byOrderForManager);
     return parkingCarInPark(parking);
   }
 }
