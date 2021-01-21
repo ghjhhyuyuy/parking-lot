@@ -151,7 +151,8 @@ class ParkingServiceTest {
     int initNumber = parkingList.get(0).getSize();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
-    parkingService.helperSave(anyString());
+    Ticket returnTicket = parkingService.helperSave(anyString());
+    assertNotNull(returnTicket);
     assertEquals(initNumber - 1,parkingList.get(0).getSize());
   }
 
@@ -162,7 +163,8 @@ class ParkingServiceTest {
     int initNumber = emptyFistParkingList.get(1).getSize();
     when(parkingRepository.findAll()).thenReturn(emptyFistParkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
-    parkingService.helperSave(anyString());
+    Ticket returnTicket = parkingService.helperSave(anyString());
+    assertNotNull(returnTicket);
     assertEquals(initNumber - 1,emptyFistParkingList.get(1).getSize());
   }
 
@@ -174,13 +176,14 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_get_parking_when_given_smart_helper(){
+  void should_reduce_max_empty_parking_when_given_smart_helper(){
     User smartHelper = getSmartUser();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
     int initNumber = parkingList.get(parkingList.size() - 1).getSize();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
-    parkingService.helperSave(anyString());
+    Ticket returnTicket = parkingService.helperSave(anyString());
+    assertNotNull(returnTicket);
     assertEquals(initNumber - 1,parkingList.get(parkingList.size() - 1).getSize());
   }
 

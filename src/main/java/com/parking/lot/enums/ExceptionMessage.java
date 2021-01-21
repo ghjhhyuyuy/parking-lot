@@ -7,7 +7,8 @@ public enum ExceptionMessage {
   ILLEGAL_TICKET("601", "illegal ticket"),
   NOT_PARKING_HELPER("605","Not ParkingHelper"),
   PARKING_OVER_SIZE("602", "parking over size"),
-  NO_MATCHING_ROLE("607","no matching role") ;
+  NO_MATCHING_ROLE("607","no matching role") ,
+  OUT_OF_SET("608","there is no set in all parkings");
   private final String code;
   private final String message;
 

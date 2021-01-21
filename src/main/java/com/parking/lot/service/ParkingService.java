@@ -103,7 +103,7 @@ public class ParkingService {
       return new Manager();
     } else if (roleId.equals(InstanseType.SMART_HELPER.getId())) {
       return new SmartHelper();
-    } else if(roleId.equals(InstanseType.NORMAL_HELPER.getId())){
+    } else if (roleId.equals(InstanseType.NORMAL_HELPER.getId())) {
       return new NormalHelper();
     }
     throw new NoMatchingRoleException(ExceptionMessage.NO_MATCHING_ROLE);
@@ -131,9 +131,10 @@ public class ParkingService {
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   @Retryable(backoff = @Backoff(multiplier = 1.5))
-  public void helperSave(String userId) {
+  public Ticket helperSave(String userId) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
     List<Parking> parkings = getAllParking(userId);
-    parkingHelper.parking(parkings);
+    Parking parking = parkingHelper.parking(parkings);
+    return parkingCarInPark(parking);
   }
 }

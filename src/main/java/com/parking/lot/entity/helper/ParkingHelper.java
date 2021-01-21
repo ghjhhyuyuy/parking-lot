@@ -8,8 +8,11 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ParkingHelper {
-  final boolean isAllow = true;
-  public void parking(List<Parking> parkings){
 
+  final boolean isAllow = true;
+
+  public Parking parking(List<Parking> parkings) {
+    System.out.println("not implementation in here");
+    return null;
   }
 }
