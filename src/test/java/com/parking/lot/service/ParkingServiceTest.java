@@ -12,6 +12,7 @@ import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.User;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.IllegalTicketException;
+import com.parking.lot.exception.NoMatchingRoleException;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.NotParkingHelperException;
 import com.parking.lot.exception.OverSizeException;
@@ -19,8 +20,10 @@ import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.TicketRepository;
 import com.parking.lot.repository.UserRepository;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,7 +63,7 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_throw_notFoundException_when_not_found_park() {
+  void should_throw_notFoundResourceException_when_not_found_park() {
     when(parkingRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundResourceException.class,
@@ -90,7 +93,7 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_throw_notFoundException_when_not_found_ticket() {
+  void should_throw_notFoundResourceException_when_not_found_ticket() {
     when(ticketRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundResourceException.class,
@@ -119,6 +122,33 @@ class ParkingServiceTest {
     assertEquals(parkings, parkingList);
   }
 
+  @Test
+  void should_throw_noMatchingRoleException_when_not_parking_helper(){
+    User user = getNotParkingHelperUser();
+    when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
+    assertThrows(
+        NoMatchingRoleException.class,
+        () -> parkingService.getAllParking(anyString()));
+  }
+
+  private User getNotParkingHelperUser() {
+    return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
+        .createDate("2020-10-12 15:33:33").removeDate(null).role("4").build();
+  }
+
+  @Test
+  void should_throw_notFoundResourceException_when_not_found_user(){
+    when(userRepository.findById(anyString())).thenReturn(Optional.empty());
+    assertThrows(
+        NotFoundResourceException.class,
+        () -> parkingService.getAllParking(anyString()));
+  }
+
+  @Test
+  void should_get_parking_when_given_normal_helper(){
+
+  }
+
   private User getUser() {
     return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
         .createDate("2020-10-12 15:33:33").removeDate(null).role("1").build();
@@ -133,10 +163,13 @@ class ParkingServiceTest {
   }
 
   private Ticket getRightTicket() {
+    Date date = new Date(System.currentTimeMillis() + 300000);
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String outTime = simpleDateFormat.format(date);
     return Ticket.builder()
         .id(UUID.randomUUID().toString())
         .parkingLotId("123")
-        .timeoutDate("2021-01-20 20:20:20")
+        .timeoutDate(outTime)
         .build();
   }
 

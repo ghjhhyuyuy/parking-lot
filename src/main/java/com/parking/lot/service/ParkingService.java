@@ -12,6 +12,7 @@ import com.parking.lot.entity.helper.SmartHelper;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.enums.InstanseType;
 import com.parking.lot.exception.IllegalTicketException;
+import com.parking.lot.exception.NoMatchingRoleException;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.NotParkingHelperException;
 import com.parking.lot.exception.OverSizeException;
@@ -102,9 +103,10 @@ public class ParkingService {
       return new Manager();
     } else if (roleId.equals(InstanseType.SMART_HELPER.getId())) {
       return new SmartHelper();
-    } else {
+    } else if(roleId.equals(InstanseType.NORMAL_HELPER.getId())){
       return new NormalHelper();
     }
+    throw new NoMatchingRoleException(ExceptionMessage.NO_MATCHING_ROLE);
   }
 
   private Ticket getCurrentTicket(String ticketId) throws NotFoundResourceException {

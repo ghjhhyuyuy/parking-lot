@@ -6,7 +6,8 @@ public enum ExceptionMessage {
   NOT_FOUND_USER("606","not found user"),
   ILLEGAL_TICKET("601", "illegal ticket"),
   NOT_PARKING_HELPER("605","Not ParkingHelper"),
-  PARKING_OVER_SIZE("602", "parking over size");
+  PARKING_OVER_SIZE("602", "parking over size"),
+  NO_MATCHING_ROLE("607","no matching role") ;
   private final String code;
   private final String message;
 
