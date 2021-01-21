@@ -3,20 +3,19 @@ package com.parking.lot.service;
 import static com.parking.lot.entity.Ticket.getTicket;
 
 import com.parking.lot.entity.Parking;
+import com.parking.lot.entity.Role;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.User;
-import com.parking.lot.entity.helper.Manager;
-import com.parking.lot.entity.helper.NormalHelper;
 import com.parking.lot.entity.helper.ParkingHelper;
-import com.parking.lot.entity.helper.SmartHelper;
 import com.parking.lot.enums.ExceptionMessage;
-import com.parking.lot.enums.InstanseType;
+import com.parking.lot.enums.RoleType;
 import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.NoMatchingRoleException;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.NotParkingHelperException;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.repository.ParkingRepository;
+import com.parking.lot.repository.RoleRepository;
 import com.parking.lot.repository.TicketRepository;
 import com.parking.lot.repository.UserRepository;
 import java.text.ParseException;
@@ -35,13 +34,15 @@ public class ParkingService {
   private final ParkingRepository parkingRepository;
   private final TicketRepository ticketRepository;
   private final UserRepository userRepository;
+  private final RoleRepository roleRepository;
 
   @Autowired
   public ParkingService(ParkingRepository parkingRepository, TicketRepository ticketRepository,
-      UserRepository userRepository) {
+      UserRepository userRepository,RoleRepository roleRepository) {
     this.parkingRepository = parkingRepository;
     this.ticketRepository = ticketRepository;
     this.userRepository = userRepository;
+    this.roleRepository = roleRepository;
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -93,18 +94,16 @@ public class ParkingService {
     Optional<User> optionalUser = userRepository.findById(userId);
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();
-      return getInstanceById(user.getRole());
+      return getParkingHelperByRoleId(user.getRole());
     }
     throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER);
   }
 
-  private ParkingHelper getInstanceById(String roleId) {
-    if (roleId.equals(InstanseType.MANGER.getId())) {
-      return new Manager();
-    } else if (roleId.equals(InstanseType.SMART_HELPER.getId())) {
-      return new SmartHelper();
-    } else if (roleId.equals(InstanseType.NORMAL_HELPER.getId())) {
-      return new NormalHelper();
+  private ParkingHelper getParkingHelperByRoleId(String roleId) {
+    Optional<Role> roleOptional = roleRepository.findById(roleId);
+    if(roleOptional.isPresent()){
+      Role role = roleOptional.get();
+      return RoleType.valueOf(role.getRole()).getParkingHelper();
     }
     throw new NoMatchingRoleException(ExceptionMessage.NO_MATCHING_ROLE);
   }

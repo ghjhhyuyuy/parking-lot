@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 import com.parking.lot.entity.Parking;
+import com.parking.lot.entity.Role;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.User;
 import com.parking.lot.enums.ExceptionMessage;
@@ -18,6 +19,7 @@ import com.parking.lot.exception.NotParkingHelperException;
 import com.parking.lot.exception.OutOfSetException;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.repository.ParkingRepository;
+import com.parking.lot.repository.RoleRepository;
 import com.parking.lot.repository.TicketRepository;
 import com.parking.lot.repository.UserRepository;
 import java.text.ParseException;
@@ -41,6 +43,8 @@ class ParkingServiceTest {
   ParkingRepository parkingRepository;
   @Mock
   UserRepository userRepository;
+  @Mock
+  RoleRepository roleRepository;
 
   public static Parking getParking() {
     return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").size(20).build();
@@ -49,7 +53,8 @@ class ParkingServiceTest {
   @BeforeEach
   void setUp() {
     openMocks(this);
-    parkingService = new ParkingService(parkingRepository, ticketRepository, userRepository);
+    parkingService = new ParkingService(parkingRepository, ticketRepository, userRepository,
+        roleRepository);
   }
 
   @Test
@@ -117,8 +122,10 @@ class ParkingServiceTest {
       throws NotParkingHelperException, NotFoundResourceException {
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
     User user = getNormalUser();
+    Role role = getNormalRole();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
+    when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     List<Parking> parkings = parkingService.getAllParking(anyString());
     assertEquals(parkings, parkingList);
   }
@@ -150,8 +157,10 @@ class ParkingServiceTest {
     User normalHelper = getNormalUser();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
     int initNumber = parkingList.get(0).getSize();
+    Role role = getNormalRole();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
+    when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     Ticket returnTicket = parkingService.helperSave(anyString());
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, parkingList.get(0).getSize());
@@ -160,13 +169,19 @@ class ParkingServiceTest {
   @Test
   void should_reduce_second_parking_when_given_normal_helper_and_first_is_empty() {
     User normalHelper = getNormalUser();
+    Role role = getNormalRole();
     List<Parking> emptyFistParkingList = getParkingListWithFirstEmpty();
     int initNumber = emptyFistParkingList.get(1).getSize();
     when(parkingRepository.findAll()).thenReturn(emptyFistParkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
+    when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     Ticket returnTicket = parkingService.helperSave(anyString());
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, emptyFistParkingList.get(1).getSize());
+  }
+
+  private Role getNormalRole() {
+    return Role.builder().role("NORMAL_HELPER").build();
   }
 
   private List<Parking> getParkingListWithFirstEmpty() {
@@ -179,10 +194,12 @@ class ParkingServiceTest {
   @Test
   void should_reduce_max_empty_parking_when_given_smart_helper() {
     User smartHelper = getSmartUser();
+    Role role = getSmartRole();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
     int initNumber = parkingList.get(parkingList.size() - 1).getSize();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
+    when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     Ticket returnTicket = parkingService.helperSave(anyString());
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getSize());
@@ -191,19 +208,27 @@ class ParkingServiceTest {
   @Test
   void should_throw_outOfSetException_when_given_full_parkings_with_smart_helper() {
     User smartHelper = getSmartUser();
+    Role role = getSmartRole();
     List<Parking> parkingList = getFullParkingList();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
+    when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     assertThrows(OutOfSetException.class,
         () -> parkingService.helperSave(anyString()));
+  }
+
+  private Role getSmartRole() {
+    return Role.builder().role("SMART_HELPER").build();
   }
 
   @Test
   void should_throw_outOfSetException_when_given_full_parkings_with_normal_helper() {
     User normalHelper = getNormalUser();
+    Role role = getNormalRole();
     List<Parking> parkingList = getFullParkingList();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
+    when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     assertThrows(OutOfSetException.class,
         () -> parkingService.helperSave(anyString()));
   }

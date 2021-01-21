@@ -13,13 +13,19 @@ public class NormalHelper extends ParkingHelper {
   @Override
   public Parking parking(List<Parking> parkings) {
     if (parkings.size() <= index.get()) {
+      resetIndex();
       throw new OutOfSetException(ExceptionMessage.OUT_OF_SET);
     }
     Parking parking = parkings.get(index.get());
     if (parking.getSize() > 0) {
+      resetIndex();
       return parking;
     }
     index.incrementAndGet();
     return parking(parkings);
+  }
+
+  private void resetIndex() {
+    this.index = new AtomicInteger(0);
   }
 }
