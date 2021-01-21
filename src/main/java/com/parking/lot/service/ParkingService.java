@@ -70,6 +70,7 @@ public class ParkingService {
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
+  @Retryable(backoff = @Backoff(multiplier = 1.5))
   public void takeCar(String ticketId)
       throws IllegalTicketException, ParseException, NotFoundResourceException {
     Ticket ticket = getCurrentTicket(ticketId);
@@ -128,6 +129,8 @@ public class ParkingService {
     }
   }
 
+  @Transactional(isolation = Isolation.SERIALIZABLE)
+  @Retryable(backoff = @Backoff(multiplier = 1.5))
   public void helperSave(String userId) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
     List<Parking> parkings = getAllParking(userId);

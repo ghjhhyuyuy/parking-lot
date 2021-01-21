@@ -22,6 +22,7 @@ import com.parking.lot.repository.UserRepository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -145,7 +146,7 @@ class ParkingServiceTest {
   }
 
   @Test
-  void should_get_parking_when_given_normal_helper(){
+  void should_reduce_first_parking_when_given_normal_helper_and_first_not_empty(){
     User normalHelper = getNormalUser();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
     int initNumber = parkingList.get(0).getSize();
@@ -153,6 +154,24 @@ class ParkingServiceTest {
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     parkingService.helperSave(anyString());
     assertEquals(initNumber - 1,parkingList.get(0).getSize());
+  }
+
+  @Test
+  void should_reduce_second_parking_when_given_normal_helper_and_first_is_empty(){
+    User normalHelper = getNormalUser();
+    List<Parking> emptyFistParkingList = getParkingListWithFirstEmpty();
+    int initNumber = emptyFistParkingList.get(1).getSize();
+    when(parkingRepository.findAll()).thenReturn(emptyFistParkingList);
+    when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
+    parkingService.helperSave(anyString());
+    assertEquals(initNumber - 1,emptyFistParkingList.get(1).getSize());
+  }
+
+  private List<Parking> getParkingListWithFirstEmpty() {
+    Parking parking = getFullParking();
+    List<Parking> parkings = new ArrayList<>(Arrays.asList(parking));
+    parkings.add(getParking());
+    return parkings;
   }
 
   @Test
