@@ -1,5 +1,6 @@
 package com.parking.lot.controller;
 
+import com.parking.lot.annotation.CheckIfManager;
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.User;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/manager")
-//权限校验
 public class ManagerController {
 
   private final ParkingService parkingService;
@@ -28,32 +28,34 @@ public class ManagerController {
   }
 
   @GetMapping("/{id}")
-  public Result<Ticket> helperSave(@PathVariable("id") String userId, boolean byOrderForManager)
+  public Result<Ticket> helperSave(@CheckIfManager String id, @PathVariable("id") String userId,
+      boolean byOrderForManager)
       throws NotFoundResourceException {
     return new Result<Ticket>()
         .getSuccessResult(parkingService.helperSave(userId, byOrderForManager));
   }
 
   @PostMapping("/parking")
-  public Result<Parking> addParking(int size)
+  public Result<Parking> addParking(@CheckIfManager String id, int size)
       throws NotFoundResourceException {
     return new Result<Parking>().getSuccessResult(parkingService.addParking(size));
   }
 
   @PostMapping("/user")
-  public Result<User> addUser(String name, String role)
+  public Result<User> addUser(@CheckIfManager String id, String name, String role)
       throws NotFoundResourceException {
     return new Result<User>().getSuccessResult(parkingService.addUser(name, role));
   }
 
   @DeleteMapping("/user/{id}")
-  public Result<User> deleteUser(@PathVariable("id") String userId)
+  public Result<User> deleteUser(@CheckIfManager String id, @PathVariable("id") String userId)
       throws NotFoundResourceException {
     return new Result<User>().getSuccessResult(parkingService.removeUser(userId));
   }
 
   @DeleteMapping("/parking/{id}")
-  public Result<Parking> deleteParking(@PathVariable("id") String parkingId)
+  public Result<Parking> deleteParking(@CheckIfManager String id,
+      @PathVariable("id") String parkingId)
       throws NotFoundResourceException {
     parkingService.removeParking(parkingId);
     return new Result<Parking>().getSuccessResult(null);

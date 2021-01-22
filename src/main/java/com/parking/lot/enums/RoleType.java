@@ -6,17 +6,22 @@ import com.parking.lot.entity.helper.ParkingHelper;
 import com.parking.lot.entity.helper.SmartHelper;
 
 public enum RoleType {
-  NORMAL_HELPER(new NormalHelper()),
-  SMART_HELPER(new SmartHelper()),
-  MANGER(new Manager());
+  NORMAL_HELPER(new NormalHelper(),"1"),
+  SMART_HELPER(new SmartHelper(),"2"),
+  MANGER(new Manager(),"3");
   private final ParkingHelper parkingHelper;
+  private final String id;
 
-  RoleType(ParkingHelper parkingHelper) {
+  RoleType(ParkingHelper parkingHelper,String id) {
     this.parkingHelper = parkingHelper;
+    this.id = id;
   }
 
   public ParkingHelper getParkingHelper() {
     return this.parkingHelper;
   }
 
+  public String getId() {
+    return this.id;
+  }
 }
