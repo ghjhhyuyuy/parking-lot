@@ -92,7 +92,7 @@ public class ParkingService {
 
   private ParkingHelper getParkingHelper(String userId) throws NotFoundResourceException {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isPresent()) {
+    if (optionalUser.isPresent() && optionalUser.get().getRemoveDate() == null) {
       User user = optionalUser.get();
       return getParkingHelperByRoleId(user.getRole());
     }
@@ -128,12 +128,22 @@ public class ParkingService {
     }
   }
 
-  @Transactional(isolation = Isolation.SERIALIZABLE)
-  @Retryable(backoff = @Backoff(multiplier = 1.5))
+  //  @Transactional(isolation = Isolation.SERIALIZABLE)
+//  @Retryable(backoff = @Backoff(multiplier = 1.5))
   public Ticket helperSave(String userId, boolean byOrderForManager) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
     List<Parking> parkings = getAllParking(userId);
     Parking parking = parkingHelper.parking(parkings, byOrderForManager);
     return parkingCarInPark(parking);
+  }
+
+  public User addUser(User user) {
+    user = User.createUser(user);
+    return userRepository.save(user);
+  }
+
+  public User removeUser(User user) {
+    user = User.removeUser(user);
+    return userRepository.save(user);
   }
 }

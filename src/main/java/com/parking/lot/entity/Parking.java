@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 public class Parking {
 
   @Id
-  String id;
-  int size;
+  private String id;
+  private int size;
 
   public AtomicInteger getAtomicIntegerSize() {
     return new AtomicInteger(this.size);

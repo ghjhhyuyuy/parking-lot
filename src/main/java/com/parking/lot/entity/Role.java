@@ -9,6 +9,6 @@ import lombok.Getter;
 public class Role {
 
   @Id
-  String id;
-  String role;
+  private String id;
+  private String role;
 }

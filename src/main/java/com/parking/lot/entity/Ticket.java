@@ -1,9 +1,10 @@
 package com.parking.lot.entity;
 
+import com.parking.lot.util.GenerateID;
+import com.parking.lot.util.TimeUtil;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -20,17 +21,15 @@ public class Ticket {
 
   final static int ticket_time = 3600000;
   @Id
-  String id;
-  String timeoutDate;
-  String parkingLotId;
+  private String id;
+  private String timeoutDate;
+  private String parkingLotId;
 
   public static Ticket getTicket(String parkingLotId) {
-    Date date = new Date(System.currentTimeMillis() + ticket_time);
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     return Ticket.builder()
-        .id(UUID.randomUUID().toString())
+        .id(GenerateID.getUUID())
         .parkingLotId(parkingLotId)
-        .timeoutDate(simpleDateFormat.format(date))
+        .timeoutDate(TimeUtil.getTime(ticket_time))
         .build();
   }
 

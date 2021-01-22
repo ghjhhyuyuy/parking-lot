@@ -1,5 +1,10 @@
 package com.parking.lot.entity;
 
+import com.parking.lot.util.GenerateID;
+import com.parking.lot.util.TimeUtil;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -15,9 +20,18 @@ import lombok.NoArgsConstructor;
 public class User {
 
   @Id
-  String id;
-  String name;
-  String role;
-  String createDate;
-  String removeDate;
+  private String id;
+  private String name;
+  private String role;
+  private String createDate;
+  private String removeDate;
+
+  public static User createUser(User user) {
+    return new User(GenerateID.getUUID(),user.name,user.role,TimeUtil.getTime(0),null);
+  }
+
+  public static User removeUser(User user) {
+    return User.builder().id(user.getId()).name(user.getName()).createDate(user.getCreateDate()).role(
+        user.getRole()).removeDate(TimeUtil.getTime(0)).build();
+  }
 }
