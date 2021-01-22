@@ -146,4 +146,13 @@ public class ParkingService {
     user = User.removeUser(user);
     return userRepository.save(user);
   }
+
+  public Parking addParking(int size) {
+    Parking parking = Parking.createParking(size);
+    return parkingRepository.save(parking);
+  }
+
+  public void removeParking(String parkingId) {
+    parkingRepository.deleteById(parkingId);
+  }
 }

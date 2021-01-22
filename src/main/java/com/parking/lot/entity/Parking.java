@@ -2,6 +2,7 @@ package com.parking.lot.entity;
 
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.OverSizeException;
+import com.parking.lot.util.GenerateID;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -20,6 +21,10 @@ public class Parking {
   @Id
   private String id;
   private int size;
+
+  public static Parking createParking(int size) {
+    return new Parking(GenerateID.getUUID(),size);
+  }
 
   public AtomicInteger getAtomicIntegerSize() {
     return new AtomicInteger(this.size);
