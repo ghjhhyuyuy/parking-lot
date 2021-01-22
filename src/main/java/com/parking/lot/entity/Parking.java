@@ -1,6 +1,7 @@
 package com.parking.lot.entity;
 
 import com.parking.lot.enums.ExceptionMessage;
+import com.parking.lot.exception.IllegalSizeException;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.util.GenerateID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,7 +24,10 @@ public class Parking {
   private int size;
 
   public static Parking createParking(int size) {
-    return new Parking(GenerateID.getUUID(), size);
+    if(size>0){
+      return new Parking(GenerateID.getUUID(), size);
+    }
+    throw new IllegalSizeException(ExceptionMessage.ILLEGAL_SIZE);
   }
 
   public AtomicInteger getAtomicIntegerSize() {
