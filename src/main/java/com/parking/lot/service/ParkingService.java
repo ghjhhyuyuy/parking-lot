@@ -128,8 +128,6 @@ public class ParkingService {
     }
   }
 
-  //  @Transactional(isolation = Isolation.SERIALIZABLE)
-//  @Retryable(backoff = @Backoff(multiplier = 1.5))
   public Ticket helperSave(String userId, boolean byOrderForManager) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
     List<Parking> parkings = getAllParking(userId);
@@ -137,14 +135,19 @@ public class ParkingService {
     return parkingCarInPark(parking);
   }
 
-  public User addUser(User user) {
-    user = User.createUser(user);
+  public User addUser(String name,String role) {
+    User user = User.createUser(name,role);
     return userRepository.save(user);
   }
 
-  public User removeUser(User user) {
-    user = User.removeUser(user);
-    return userRepository.save(user);
+  public User removeUser(String userId) {
+    Optional<User> optionalUser = userRepository.findById(userId);
+    if(optionalUser.isPresent()){
+      User user = optionalUser.get();
+      user = User.removeUser(user);
+      return userRepository.save(user);
+    }
+    throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER);
   }
 
   public Parking addParking(int size) {

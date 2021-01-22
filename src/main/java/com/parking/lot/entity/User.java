@@ -26,8 +26,8 @@ public class User {
   private String createDate;
   private String removeDate;
 
-  public static User createUser(User user) {
-    return new User(GenerateID.getUUID(),user.name,user.role,TimeUtil.getTime(0),null);
+  public static User createUser(String name,String role) {
+    return new User(GenerateID.getUUID(),name,role,TimeUtil.getTime(0),null);
   }
 
   public static User removeUser(User user) {

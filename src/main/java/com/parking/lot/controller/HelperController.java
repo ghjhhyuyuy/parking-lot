@@ -13,27 +13,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/parking")
-public class ParkingController {
+@RequestMapping("/helper")
+public class HelperController {
 
   private final ParkingService parkingService;
 
   @Autowired
-  public ParkingController(
+  public HelperController(
       ParkingService parkingService) {
     this.parkingService = parkingService;
   }
 
   @GetMapping("/{id}")
-  public Result<Ticket> parkingCar(@PathVariable("id") String parkingId)
+  public Result<Ticket> helperSave(@PathVariable("id") String userId)
       throws NotFoundResourceException {
-    return new Result<Ticket>().getSuccessResult(parkingService.parkingCar(parkingId));
-  }
-
-  @PostMapping("/{id}")
-  public Result<Ticket> takeCar(@PathVariable("id") String ticketId)
-      throws NotFoundResourceException, ParseException {
-    parkingService.takeCar(ticketId);
-    return new Result<Ticket>().getSuccessResult(null);
+    return new Result<Ticket>().getSuccessResult(parkingService.helperSave(userId,false));
   }
 }
