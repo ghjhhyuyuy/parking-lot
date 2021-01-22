@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/manager")
+//权限校验
 public class ManagerController {
 
   private final ParkingService parkingService;

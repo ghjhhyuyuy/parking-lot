@@ -11,6 +11,6 @@ import lombok.Getter;
 public class Role {
 
   @Id
-  private String id;
-  private String role;
+  private final String id;
+  private final String role;
 }
