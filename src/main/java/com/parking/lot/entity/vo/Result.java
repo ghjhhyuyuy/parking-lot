@@ -8,15 +8,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Result<T> {
+
   String code;
   String message;
   T data;
 
   public static Result<Object> getExceptionResult(String code, String message) {
-    return new Result<>(code,message,null);
+    return new Result<>(code, message, null);
   }
 
   public Result<T> getSuccessResult(T data) {
-    return new Result<>("200","success",data);
+    return new Result<>("200", "success", data);
   }
 }

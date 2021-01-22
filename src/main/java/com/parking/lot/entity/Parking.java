@@ -23,7 +23,7 @@ public class Parking {
   private int size;
 
   public static Parking createParking(int size) {
-    return new Parking(GenerateID.getUUID(),size);
+    return new Parking(GenerateID.getUUID(), size);
   }
 
   public AtomicInteger getAtomicIntegerSize() {

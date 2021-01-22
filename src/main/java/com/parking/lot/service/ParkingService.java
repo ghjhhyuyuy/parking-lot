@@ -135,14 +135,14 @@ public class ParkingService {
     return parkingCarInPark(parking);
   }
 
-  public User addUser(String name,String role) {
-    User user = User.createUser(name,role);
+  public User addUser(String name, String role) {
+    User user = User.createUser(name, role);
     return userRepository.save(user);
   }
 
   public User removeUser(String userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if(optionalUser.isPresent()){
+    if (optionalUser.isPresent()) {
       User user = optionalUser.get();
       user = User.removeUser(user);
       return userRepository.save(user);

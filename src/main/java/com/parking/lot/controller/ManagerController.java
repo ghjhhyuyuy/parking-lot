@@ -6,7 +6,6 @@ import com.parking.lot.entity.User;
 import com.parking.lot.entity.vo.Result;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.service.ParkingService;
-import java.text.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,25 +35,25 @@ public class ManagerController {
 
   @PostMapping("/parking")
   public Result<Parking> addParking(int size)
-      throws NotFoundResourceException{
+      throws NotFoundResourceException {
     return new Result<Parking>().getSuccessResult(parkingService.addParking(size));
   }
 
   @PostMapping("/user")
-  public Result<User> addUser(String name,String role)
-      throws NotFoundResourceException{
-    return new Result<User>().getSuccessResult(parkingService.addUser(name,role));
+  public Result<User> addUser(String name, String role)
+      throws NotFoundResourceException {
+    return new Result<User>().getSuccessResult(parkingService.addUser(name, role));
   }
 
   @DeleteMapping("/user/{id}")
   public Result<User> deleteUser(@PathVariable("id") String userId)
-      throws NotFoundResourceException{
+      throws NotFoundResourceException {
     return new Result<User>().getSuccessResult(parkingService.removeUser(userId));
   }
 
   @DeleteMapping("/parking/{id}")
   public Result<Parking> deleteParking(@PathVariable("id") String parkingId)
-      throws NotFoundResourceException{
+      throws NotFoundResourceException {
     parkingService.removeParking(parkingId);
     return new Result<Parking>().getSuccessResult(null);
   }

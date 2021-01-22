@@ -4,11 +4,9 @@ import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.vo.Result;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.service.ParkingService;
-import java.text.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +25,6 @@ public class HelperController {
   @GetMapping("/{id}")
   public Result<Ticket> helperSave(@PathVariable("id") String userId)
       throws NotFoundResourceException {
-    return new Result<Ticket>().getSuccessResult(parkingService.helperSave(userId,false));
+    return new Result<Ticket>().getSuccessResult(parkingService.helperSave(userId, false));
   }
 }
