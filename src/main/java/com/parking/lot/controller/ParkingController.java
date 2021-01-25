@@ -32,7 +32,7 @@ public class ParkingController {
 
   @PostMapping("/{id}")
   public Result<Ticket> takeCar(@PathVariable("id") String ticketId)
-      throws NotFoundResourceException, ParseException {
+      throws NotFoundResourceException {
     parkingService.takeCar(ticketId);
     return new Result<Ticket>().getSuccessResult(null);
   }
