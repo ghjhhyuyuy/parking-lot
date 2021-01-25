@@ -1,13 +1,11 @@
 package com.parking.lot.util;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class TimeUtil {
 
-  public static String getTime(int ms) {
-    Date date = new Date(System.currentTimeMillis() + ms);
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    return simpleDateFormat.format(date);
+  public static LocalDateTime getTime(int hour) {
+    LocalDateTime localDateTime = LocalDateTime.now();
+    return localDateTime.plusHours(hour);
   }
 }
