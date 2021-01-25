@@ -18,7 +18,6 @@ import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.RoleRepository;
 import com.parking.lot.repository.TicketRepository;
 import com.parking.lot.repository.UserRepository;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
