@@ -4,7 +4,6 @@ import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.vo.Result;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.service.ParkingService;
-import java.text.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +26,7 @@ public class ParkingController {
   @GetMapping("/{id}")
   public Result<Ticket> parkingCar(@PathVariable("id") String parkingId)
       throws NotFoundResourceException {
-    return new Result<Ticket>().getSuccessResult(parkingService.parkingCar(parkingId));
+    return new Result<Ticket>().getSuccessResult(parkingService.parkingCarBySelf(parkingId));
   }
 
   @PostMapping("/{id}")

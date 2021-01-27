@@ -46,7 +46,7 @@ public class ParkingService {
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   @Retryable(backoff = @Backoff(multiplier = 1.5))
-  public Ticket parkingCar(String parkingId)
+  public Ticket parkingCarBySelf(String parkingId)
       throws OverSizeException, NotFoundResourceException {
     Parking parking = getCurrentPark(parkingId);
     parking.checkSize();
@@ -62,11 +62,8 @@ public class ParkingService {
   }
 
   private Parking getCurrentPark(String parkingId) throws NotFoundResourceException {
-    Optional<Parking> optionalParking = parkingRepository.findById(parkingId);
-    if (optionalParking.isPresent()) {
-      return optionalParking.get();
-    }
-    throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING);
+    return parkingRepository.findById(parkingId)
+        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING));
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -83,51 +80,39 @@ public class ParkingService {
 
   public List<Parking> getAllParking(String userId)
       throws NotParkingHelperException, NotFoundResourceException {
-    if (getParkingHelper(userId).isAllow()) {
-      return parkingRepository.findAll();
-    }
-    throw new NotParkingHelperException(ExceptionMessage.NOT_PARKING_HELPER);
+    return Optional.of(getParkingHelper(userId)).map(ParkingHelper::isAllow).filter(p -> p)
+        .map(p -> parkingRepository.findAll())
+        .orElseThrow(() -> new NotParkingHelperException(ExceptionMessage.NOT_PARKING_HELPER));
   }
 
   private ParkingHelper getParkingHelper(String userId) throws NotFoundResourceException {
-    Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isPresent() && optionalUser.get().getRemoveDate() == null) {
-      User user = optionalUser.get();
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER));
+    if (user.getRemoveDate() == null) {
       return getParkingHelperByRoleId(user.getRole());
     }
     throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER);
   }
 
   private ParkingHelper getParkingHelperByRoleId(String roleId) {
-    Optional<Role> roleOptional = roleRepository.findById(roleId);
-    if (roleOptional.isPresent()) {
-      Role role = roleOptional.get();
-      return RoleType.valueOf(role.getRole()).getParkingHelper();
-    }
-    throw new NoMatchingRoleException(ExceptionMessage.NO_MATCHING_ROLE);
+    Role role = roleRepository.findById(roleId)
+        .orElseThrow(() -> new NoMatchingRoleException(ExceptionMessage.NO_MATCHING_ROLE));
+    return RoleType.valueOf(role.getRole()).getParkingHelper();
   }
 
   private Ticket getCurrentTicket(String ticketId) throws NotFoundResourceException {
-    Optional<Ticket> optionalTicket = ticketRepository.findById(ticketId);
-    if (optionalTicket.isPresent()) {
-      return optionalTicket.get();
-    } else {
-      throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_TICKET);
-    }
+    return ticketRepository.findById(ticketId)
+        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_TICKET));
   }
 
   private void takeCarFromPark(Ticket ticket) throws NotFoundResourceException {
-    Optional<Parking> optionalParking = parkingRepository.findById(ticket.getParkingLotId());
-    if (optionalParking.isPresent()) {
-      Parking parking = optionalParking.get();
-      parking.upSize();
-      parkingRepository.save(parking);
-    } else {
-      throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING);
-    }
+    Parking parking = parkingRepository.findById(ticket.getParkingLotId())
+        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING));
+    parking.upSize();
+    parkingRepository.save(parking);
   }
 
-  public Ticket helperSave(String userId, boolean byOrderForManager) {
+  public Ticket parkingCarByHelper(String userId, boolean byOrderForManager) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
     List<Parking> parkings = getAllParking(userId);
     Parking parking = parkingHelper.parking(parkings, byOrderForManager);
@@ -140,13 +125,10 @@ public class ParkingService {
   }
 
   public User removeUser(String userId) {
-    Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isPresent()) {
-      User user = optionalUser.get();
-      user = User.removeUser(user);
-      return userRepository.save(user);
-    }
-    throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER);
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER));
+    user = User.removeUser(user);
+    return userRepository.save(user);
   }
 
   public Parking addParking(int size) {

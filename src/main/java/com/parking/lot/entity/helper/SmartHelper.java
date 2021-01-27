@@ -12,12 +12,8 @@ public class SmartHelper extends ParkingHelper {
 
   @Override
   public Parking parking(List<Parking> parkings, boolean byOrderForManager) {
-    Optional<Parking> optionalParking = getMaxSetsParking(parkings);
-    if (optionalParking.isPresent()) {
-      return optionalParking.get();
-    } else {
-      throw new OutOfSetException(ExceptionMessage.OUT_OF_SET);
-    }
+    return getMaxSetsParking(parkings)
+        .orElseThrow(() -> new OutOfSetException(ExceptionMessage.OUT_OF_SET));
   }
 
   private Optional<Parking> getMaxSetsParking(List<Parking> parkings) {

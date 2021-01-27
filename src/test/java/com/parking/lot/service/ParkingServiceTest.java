@@ -22,7 +22,6 @@ import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.RoleRepository;
 import com.parking.lot.repository.TicketRepository;
 import com.parking.lot.repository.UserRepository;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,7 +62,7 @@ class ParkingServiceTest {
     Parking parking = getParking();
     int parkingEmptyNum = parking.getSize();
     when(parkingRepository.findById(parking.getId())).thenReturn(Optional.of(parking));
-    Ticket returnTicket = parkingService.parkingCar(parking.getId());
+    Ticket returnTicket = parkingService.parkingCarBySelf(parking.getId());
     assertNotNull(returnTicket);
     assertEquals(parkingEmptyNum - 1, parking.getSize());
   }
@@ -73,7 +72,7 @@ class ParkingServiceTest {
     when(parkingRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundResourceException.class,
-        () -> parkingService.parkingCar("123"),
+        () -> parkingService.parkingCarBySelf("123"),
         ExceptionMessage.NOT_FOUND_PARKING.getMessage());
   }
 
@@ -83,12 +82,12 @@ class ParkingServiceTest {
     when(parkingRepository.findById(parking.getId())).thenReturn(Optional.of(parking));
     assertThrows(
         OverSizeException.class,
-        () -> parkingService.parkingCar(parking.getId()));
+        () -> parkingService.parkingCarBySelf(parking.getId()));
   }
 
   @Test
   void should_add_park_size_when_give_right_ticket()
-      throws ParseException, IllegalTicketException, NotFoundResourceException {
+      throws IllegalTicketException, NotFoundResourceException {
     Ticket ticket = getRightTicket();
     Parking parking = getParking();
     int parkingEmptyNum = parking.getSize();
@@ -161,7 +160,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.helperSave(anyString(), false);
+    Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), false);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, parkingList.get(0).getSize());
   }
@@ -175,7 +174,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(emptyFistParkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.helperSave(anyString(), false);
+    Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), false);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, emptyFistParkingList.get(1).getSize());
   }
@@ -200,7 +199,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.helperSave(anyString(), false);
+    Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), false);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getSize());
   }
@@ -214,7 +213,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(manager));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.helperSave(anyString(), true);
+    Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), true);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, parkingList.get(0).getSize());
   }
@@ -228,7 +227,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(manager));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.helperSave(anyString(), false);
+    Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), false);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getSize());
   }
@@ -251,7 +250,7 @@ class ParkingServiceTest {
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     assertThrows(OutOfSetException.class,
-        () -> parkingService.helperSave(anyString(), false));
+        () -> parkingService.parkingCarByHelper(anyString(), false));
   }
 
   private Role getSmartRole() {
@@ -267,7 +266,7 @@ class ParkingServiceTest {
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     assertThrows(OutOfSetException.class,
-        () -> parkingService.helperSave(anyString(), false));
+        () -> parkingService.parkingCarByHelper(anyString(), false));
   }
 
   private List<Parking> getFullParkingList() {
