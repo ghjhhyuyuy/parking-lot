@@ -23,7 +23,7 @@ public class HelperController {
   }
 
   @GetMapping("/{id}")
-  public Result<Ticket> helperSave(@PathVariable("id") String userId)
+  public Result<Ticket> parkingCarByHelper(@PathVariable("id") String userId)
       throws NotFoundResourceException {
     return new Result<Ticket>().getSuccessResult(parkingService.parkingCarByHelper(userId, false));
   }

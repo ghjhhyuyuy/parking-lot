@@ -5,7 +5,6 @@ import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.enums.RoleType;
 import com.parking.lot.exception.NotManagerUserException;
 import com.parking.lot.repository.UserRepository;
-import java.util.Optional;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -27,13 +26,10 @@ public class ManagerAspect {
   public void before(JoinPoint joinPoint) {
     Object[] objects = joinPoint.getArgs();
     String id = (String) objects[0];
-    Optional<User> optionalUser = userRepository.findById(id);
-    if (optionalUser.isPresent()) {
-      User user = optionalUser.get();
-      if (user.getRole().equals(RoleType.MANGER.getId())) {
-        return;
-      }
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> new NotManagerUserException(ExceptionMessage.NOT_MANAGER_USER));
+    if (!user.getRole().equals(RoleType.MANGER.getId())) {
+      throw new NotManagerUserException(ExceptionMessage.NOT_MANAGER_USER);
     }
-    throw new NotManagerUserException(ExceptionMessage.NOT_MANAGER_USER);
   }
 }

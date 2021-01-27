@@ -80,7 +80,7 @@ public class ParkingService {
 
   public List<Parking> getAllParking(String userId)
       throws NotParkingHelperException, NotFoundResourceException {
-    return Optional.of(getParkingHelper(userId)).map(ParkingHelper::isAllow).filter(p -> p)
+    return Optional.of(getParkingHelper(userId)).map(ParkingHelper::isAllow).filter(isAllow -> isAllow == true)
         .map(p -> parkingRepository.findAll())
         .orElseThrow(() -> new NotParkingHelperException(ExceptionMessage.NOT_PARKING_HELPER));
   }

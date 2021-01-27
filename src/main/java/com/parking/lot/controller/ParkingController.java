@@ -24,7 +24,7 @@ public class ParkingController {
   }
 
   @GetMapping("/{id}")
-  public Result<Ticket> parkingCar(@PathVariable("id") String parkingId)
+  public Result<Ticket> parkingCarBySelf(@PathVariable("id") String parkingId)
       throws NotFoundResourceException {
     return new Result<Ticket>().getSuccessResult(parkingService.parkingCarBySelf(parkingId));
   }

@@ -27,7 +27,7 @@ public class ManagerController {
   }
 
   @GetMapping("/{id}")
-  public Result<Ticket> helperSave(@PathVariable("id") String userId,
+  public Result<Ticket> parkingCarByHelper(@PathVariable("id") String userId,
       boolean byOrderForManager)
       throws NotFoundResourceException {
     return new Result<Ticket>()
