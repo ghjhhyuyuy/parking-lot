@@ -27,7 +27,7 @@ public class ManagerAspect {
     Object[] objects = joinPoint.getArgs();
     String id = (String) objects[0];
     User user = userRepository.findById(id)
-        .orElseThrow(() -> new NotManagerUserException(ExceptionMessage.NOT_MANAGER_USER));
+        .orElseThrow(() -> new NotManagerUserException(ExceptionMessage.NOT_FOUND_USER));
     if (!user.getRole().equals(RoleType.MANGER.getId())) {
       throw new NotManagerUserException(ExceptionMessage.NOT_MANAGER_USER);
     }
