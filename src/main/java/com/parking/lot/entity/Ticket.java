@@ -2,7 +2,6 @@ package com.parking.lot.entity;
 
 import com.parking.lot.util.GenerateID;
 import com.parking.lot.util.TimeUtil;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.persistence.Entity;
