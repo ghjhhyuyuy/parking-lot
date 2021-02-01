@@ -80,7 +80,9 @@ public class ParkingService {
 
   public List<Parking> getAllParking(String userId)
       throws NotParkingHelperException, NotFoundResourceException {
-    return Optional.of(getParkingHelper(userId)).map(ParkingHelper::isAllow).filter(isAllow -> isAllow == true)
+    return Optional.of(getParkingHelper(userId))
+        .map(ParkingHelper::isAllow)
+        .filter(isAllow -> isAllow == true)
         .map(p -> parkingRepository.findAll())
         .orElseThrow(() -> new NotParkingHelperException(ExceptionMessage.NOT_PARKING_HELPER));
   }
@@ -112,6 +114,8 @@ public class ParkingService {
     parkingRepository.save(parking);
   }
 
+  @Transactional(isolation = Isolation.SERIALIZABLE)
+  @Retryable(backoff = @Backoff(multiplier = 1.5))
   public Ticket parkingCarByHelper(String userId, boolean byOrderForManager) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
     List<Parking> parkings = getAllParking(userId);
