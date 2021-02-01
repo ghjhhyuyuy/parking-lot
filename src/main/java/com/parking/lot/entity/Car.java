@@ -12,10 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Storage {
+public class Car {
   @Id
   private String id;
-  private String zone;
-  private String address;
-  private String carId;
+  private String color;
+  private String brand;
 }
