@@ -23,6 +23,7 @@ public class Ticket {
   private String id;
   private String timeoutDate;
   private String parkingLotId;
+  private String storageId;
 
   public static Ticket getTicket(String parkingLotId) {
     return Ticket.builder()
