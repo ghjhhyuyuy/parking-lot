@@ -81,11 +81,11 @@ public class ParkingService {
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   @Retryable(backoff = @Backoff(multiplier = 1.5))
-  public Car takeCar(String ticketId)
+  public boolean takeCar(String ticketId, String carId)
       throws IllegalTicketException, NotFoundResourceException {
     Ticket ticket = getTicketById(ticketId);
     if (ticket.checkTicket()) {
-      return takeCarFromPark(ticket);
+      return takeCarFromPark(ticket).getId().equals(carId);
     } else {
       throw new IllegalTicketException(ExceptionMessage.ILLEGAL_TICKET);
     }

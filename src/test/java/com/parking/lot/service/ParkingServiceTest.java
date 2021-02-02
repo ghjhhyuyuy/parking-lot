@@ -1,6 +1,7 @@
 package com.parking.lot.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -108,7 +109,7 @@ class ParkingServiceTest {
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
     when(storageRepository.findById("1")).thenReturn(Optional.of(storage));
     when(carRepository.findById("test")).thenReturn(Optional.of(car));
-    parkingService.takeCar("123");
+    parkingService.takeCar("123", "test");
     assertEquals(parkingEmptyNum + 1, parking.getSize());
   }
 
@@ -125,7 +126,8 @@ class ParkingServiceTest {
     when(ticketRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundResourceException.class,
-        () -> parkingService.takeCar("123"), ExceptionMessage.NOT_FOUND_TICKET.getMessage());
+        () -> parkingService.takeCar("123", "test"),
+        ExceptionMessage.NOT_FOUND_TICKET.getMessage());
   }
 
   @Test
@@ -139,7 +141,8 @@ class ParkingServiceTest {
     when(carRepository.findById("test")).thenReturn(Optional.empty());
     assertThrows(
         NotFoundResourceException.class,
-        () -> parkingService.takeCar("123"), ExceptionMessage.NOT_FOUND_TICKET.getMessage());
+        () -> parkingService.takeCar("123", "test"),
+        ExceptionMessage.NOT_FOUND_TICKET.getMessage());
   }
 
   @Test
@@ -152,7 +155,8 @@ class ParkingServiceTest {
     when(ticketRepository.findById(anyString())).thenReturn(Optional.empty());
     assertThrows(
         NotFoundResourceException.class,
-        () -> parkingService.takeCar("123"), ExceptionMessage.NOT_FOUND_TICKET.getMessage());
+        () -> parkingService.takeCar("123", "test"),
+        ExceptionMessage.NOT_FOUND_TICKET.getMessage());
   }
 
   @Test
@@ -163,7 +167,21 @@ class ParkingServiceTest {
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
     assertThrows(
         IllegalTicketException.class,
-        () -> parkingService.takeCar("123"));
+        () -> parkingService.takeCar("123", "test"));
+  }
+
+  @Test
+  void should_return_false_when_not_take_right_car() {
+    Ticket ticket = getRightTicket();
+    Parking parking = getParking();
+    Car car = getCar();
+    Storage storage = getStorage();
+    when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
+    when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
+    when(storageRepository.findById("1")).thenReturn(Optional.of(storage));
+    when(carRepository.findById("test")).thenReturn(Optional.of(car));
+    boolean result = parkingService.takeCar("123", "test1");
+    assertFalse(result);
   }
 
   @Test
