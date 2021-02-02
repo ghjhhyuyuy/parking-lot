@@ -31,26 +31,29 @@ public class ManagerController {
   public Result<Ticket> parkingCarByHelper(@PathVariable("id") String userId,
       Car car)
       throws NotFoundResourceException {
-    return new Result<Ticket>()
-        .getSuccessResult(parkingService.parkingCarByHelper(userId, car));
+    Ticket ticket = parkingService.parkingCarByHelper(userId, car);
+    return new Result<Ticket>().getSuccessResult(ticket);
   }
 
   @PostMapping("/parking")
   public Result<Parking> addParking(String id, int size)
       throws NotFoundResourceException {
-    return new Result<Parking>().getSuccessResult(parkingService.addParking(size));
+    Parking parking = parkingService.addParking(size);
+    return new Result<Parking>().getSuccessResult(parking);
   }
 
   @PostMapping("/user")
   public Result<User> addUser(String id, String name, String role)
       throws NotFoundResourceException {
-    return new Result<User>().getSuccessResult(parkingService.addUser(name, role));
+    User user = parkingService.addUser(name, role);
+    return new Result<User>().getSuccessResult(user);
   }
 
   @DeleteMapping("/user/{id}")
   public Result<User> deleteUser(@PathVariable("id") String userId)
       throws NotFoundResourceException {
-    return new Result<User>().getSuccessResult(parkingService.removeUser(userId));
+    User user = parkingService.removeUser(userId);
+    return new Result<User>().getSuccessResult(user);
   }
 
   @DeleteMapping("/parking/{id}")

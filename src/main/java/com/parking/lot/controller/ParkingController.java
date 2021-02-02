@@ -27,12 +27,14 @@ public class ParkingController {
   @GetMapping("/{id}")
   public Result<Ticket> parkingCarBySelf(@PathVariable("id") String parkingId, Car car)
       throws NotFoundResourceException {
-    return new Result<Ticket>().getSuccessResult(parkingService.parkingCarBySelf(parkingId, car));
+    Ticket ticket = parkingService.parkingCarBySelf(parkingId, car);
+    return new Result<Ticket>().getSuccessResult(ticket);
   }
 
   @PostMapping("/{id}")
   public Result<Car> takeCar(@PathVariable("id") String ticketId)
       throws NotFoundResourceException {
-    return new Result<Car>().getSuccessResult(parkingService.takeCar(ticketId));
+    Car car = parkingService.takeCar(ticketId);
+    return new Result<Car>().getSuccessResult(car);
   }
 }

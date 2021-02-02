@@ -7,12 +7,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ParkingHelper {
+public abstract class ParkingHelper {
 
   final boolean isAllow = true;
 
-  public Parking parking(List<Parking> parkings) {
-    System.out.println("not implementation in here");
-    return null;
-  }
+  public abstract Parking parking(List<Parking> parkings);
 }

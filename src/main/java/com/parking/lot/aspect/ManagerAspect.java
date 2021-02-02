@@ -24,12 +24,16 @@ public class ManagerAspect {
 
   @Before("execution(public * com.parking.lot.controller.ManagerController.*(..))")
   public void before(JoinPoint joinPoint) {
-    Object[] objects = joinPoint.getArgs();
-    String id = (String) objects[0];
+    String id = getParamUserId(joinPoint);
     User user = userRepository.findById(id)
         .orElseThrow(() -> new NotManagerUserException(ExceptionMessage.NOT_FOUND_USER));
     if (!user.getRole().equals(RoleType.MANGER.getId())) {
       throw new NotManagerUserException(ExceptionMessage.NOT_MANAGER_USER);
     }
+  }
+
+  private String getParamUserId(JoinPoint joinPoint) {
+    Object[] objects = joinPoint.getArgs();
+    return (String) objects[0];
   }
 }

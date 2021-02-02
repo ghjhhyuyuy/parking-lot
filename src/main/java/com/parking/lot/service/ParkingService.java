@@ -57,8 +57,8 @@ public class ParkingService {
   @Retryable(backoff = @Backoff(multiplier = 1.5))
   public Ticket parkingCarBySelf(String parkingId, Car car)
       throws OverSizeException, NotFoundResourceException {
-    Parking parking = getCurrentPark(parkingId);
-    parking.checkSize();
+    Parking parking = getParkingById(parkingId);
+    parking.ifSizeMoreThanZero();
     return parkingCarInPark(parking, car);
   }
 
@@ -69,7 +69,7 @@ public class ParkingService {
     return ticket;
   }
 
-  private Parking getCurrentPark(String parkingId) throws NotFoundResourceException {
+  private Parking getParkingById(String parkingId) throws NotFoundResourceException {
     return parkingRepository.findById(parkingId)
         .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING));
   }
@@ -78,7 +78,7 @@ public class ParkingService {
   @Retryable(backoff = @Backoff(multiplier = 1.5))
   public Car takeCar(String ticketId)
       throws IllegalTicketException, NotFoundResourceException {
-    Ticket ticket = getCurrentTicket(ticketId);
+    Ticket ticket = getTicketById(ticketId);
     if (ticket.checkTicket()) {
       return takeCarFromPark(ticket);
     } else {
@@ -110,21 +110,29 @@ public class ParkingService {
     return RoleType.valueOf(role.getRole()).getParkingHelper();
   }
 
-  private Ticket getCurrentTicket(String ticketId) throws NotFoundResourceException {
+  private Ticket getTicketById(String ticketId) throws NotFoundResourceException {
     return ticketRepository.findById(ticketId)
         .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_TICKET));
   }
 
   private Car takeCarFromPark(Ticket ticket) throws NotFoundResourceException {
-    Parking parking = parkingRepository.findById(ticket.getParkingLotId())
-        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING));
-    Storage storage = storageRepository.findById(ticket.getStorageId())
-        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_STORAGE));
-    Car car = carRepository.findById(storage.getCarId())
-        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_CAR));
+    Car car = getCarByTicket(ticket);
+    Parking parking = getParkingByTicket(ticket);
     parking.upSize();
     parkingRepository.save(parking);
     return car;
+  }
+
+  private Parking getParkingByTicket(Ticket ticket) {
+    return parkingRepository.findById(ticket.getParkingLotId())
+        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING));
+  }
+
+  private Car getCarByTicket(Ticket ticket) {
+    Storage storage = storageRepository.findById(ticket.getStorageId())
+        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_STORAGE));
+    return carRepository.findById(storage.getCarId())
+        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_CAR));
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)

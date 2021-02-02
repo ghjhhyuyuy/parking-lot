@@ -42,7 +42,7 @@ public class Parking {
     this.size = getAtomicIntegerSize().incrementAndGet();
   }
 
-  public void checkSize() {
+  public void ifSizeMoreThanZero() {
     if (this.size > 0) {
       return;
     }
