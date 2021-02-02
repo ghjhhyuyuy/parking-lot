@@ -2,6 +2,12 @@ package com.parking.lot.entity;
 
 import static com.parking.lot.entity.Storage.getStorage;
 
+import com.parking.lot.repository.CarRepository;
+import com.parking.lot.repository.ParkingRepository;
+import com.parking.lot.repository.RoleRepository;
+import com.parking.lot.repository.StorageRepository;
+import com.parking.lot.repository.TicketRepository;
+import com.parking.lot.repository.UserRepository;
 import com.parking.lot.util.GenerateID;
 import com.parking.lot.util.TimeUtil;
 import java.time.LocalDateTime;
@@ -12,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Builder
 @Getter
@@ -29,9 +36,7 @@ public class Ticket {
   private String parkingLotId;
   private String storageId;
 
-  public static Ticket createTicket(Parking parking, Car car) {
-    Storage storage = getStorage(car);
-    parking.reduceSize();
+  public static Ticket createTicket(Parking parking, Storage storage) {
     return Ticket.builder()
         .id(GenerateID.getUUID())
         .parkingLotId(parking.getId())

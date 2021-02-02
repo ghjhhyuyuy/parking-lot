@@ -1,5 +1,6 @@
 package com.parking.lot.service;
 
+import static com.parking.lot.entity.Storage.getStorage;
 import static com.parking.lot.entity.Ticket.createTicket;
 
 import com.parking.lot.entity.Car;
@@ -63,7 +64,11 @@ public class ParkingService {
   }
 
   private Ticket parkingCarInPark(Parking parking, Car car) {
-    Ticket ticket = createTicket(parking, car);
+    Storage storage = getStorage(car);
+    parking.reduceSize();
+    carRepository.save(car);
+    storageRepository.save(storage);
+    Ticket ticket = createTicket(parking, storage);
     ticketRepository.save(ticket);
     parkingRepository.save(parking);
     return ticket;
