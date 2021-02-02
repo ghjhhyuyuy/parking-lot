@@ -1,5 +1,7 @@
 package com.parking.lot.entity;
 
+import static com.parking.lot.entity.Storage.getStorage;
+
 import com.parking.lot.util.GenerateID;
 import com.parking.lot.util.TimeUtil;
 import java.time.LocalDateTime;
@@ -17,25 +19,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 public class Ticket {
-  private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
   final static int ticket_time_hour = 1;
+  private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+      .ofPattern("yyyy-MM-dd HH:mm:ss");
   @Id
   private String id;
   private String timeoutDate;
   private String parkingLotId;
   private String storageId;
 
-  public static Ticket getTicket(String parkingLotId) {
+  public static Ticket createTicket(Parking parking, Car car) {
+    Storage storage = getStorage(car);
+    parking.reduceSize();
     return Ticket.builder()
         .id(GenerateID.getUUID())
-        .parkingLotId(parkingLotId)
+        .parkingLotId(parking.getId())
         .timeoutDate(dateTimeFormatter.format(TimeUtil.getTime(ticket_time_hour)))
+        .storageId(storage.getId())
         .build();
   }
 
-  public boolean checkTicket(){
+  public boolean checkTicket() {
     LocalDateTime localDateTime = TimeUtil.getTime(0);
-    LocalDateTime timeoutDate = LocalDateTime.parse(this.timeoutDate,dateTimeFormatter);
+    LocalDateTime timeoutDate = LocalDateTime.parse(this.timeoutDate, dateTimeFormatter);
     return localDateTime.isBefore(timeoutDate);
   }
 }

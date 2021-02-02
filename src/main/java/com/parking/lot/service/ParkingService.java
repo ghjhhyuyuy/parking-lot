@@ -1,9 +1,11 @@
 package com.parking.lot.service;
 
-import static com.parking.lot.entity.Ticket.getTicket;
+import static com.parking.lot.entity.Ticket.createTicket;
 
+import com.parking.lot.entity.Car;
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Role;
+import com.parking.lot.entity.Storage;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.User;
 import com.parking.lot.entity.helper.ParkingHelper;
@@ -14,8 +16,10 @@ import com.parking.lot.exception.NoMatchingRoleException;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.NotParkingHelperException;
 import com.parking.lot.exception.OverSizeException;
+import com.parking.lot.repository.CarRepository;
 import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.RoleRepository;
+import com.parking.lot.repository.StorageRepository;
 import com.parking.lot.repository.TicketRepository;
 import com.parking.lot.repository.UserRepository;
 import java.util.List;
@@ -34,29 +38,33 @@ public class ParkingService {
   private final TicketRepository ticketRepository;
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
+  private final CarRepository carRepository;
+  private final StorageRepository storageRepository;
 
   @Autowired
   public ParkingService(ParkingRepository parkingRepository, TicketRepository ticketRepository,
-      UserRepository userRepository, RoleRepository roleRepository) {
+      UserRepository userRepository, RoleRepository roleRepository, CarRepository carRepository,
+      StorageRepository storageRepository) {
     this.parkingRepository = parkingRepository;
     this.ticketRepository = ticketRepository;
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
+    this.storageRepository = storageRepository;
+    this.carRepository = carRepository;
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   @Retryable(backoff = @Backoff(multiplier = 1.5))
-  public Ticket parkingCarBySelf(String parkingId)
+  public Ticket parkingCarBySelf(String parkingId, Car car)
       throws OverSizeException, NotFoundResourceException {
     Parking parking = getCurrentPark(parkingId);
     parking.checkSize();
-    return parkingCarInPark(parking);
+    return parkingCarInPark(parking, car);
   }
 
-  private Ticket parkingCarInPark(Parking parking) {
-    Ticket ticket = getTicket(parking.getId());
+  private Ticket parkingCarInPark(Parking parking, Car car) {
+    Ticket ticket = createTicket(parking, car);
     ticketRepository.save(ticket);
-    parking.reduceSize();
     parkingRepository.save(parking);
     return ticket;
   }
@@ -68,11 +76,11 @@ public class ParkingService {
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   @Retryable(backoff = @Backoff(multiplier = 1.5))
-  public void takeCar(String ticketId)
+  public Car takeCar(String ticketId)
       throws IllegalTicketException, NotFoundResourceException {
     Ticket ticket = getCurrentTicket(ticketId);
     if (ticket.checkTicket()) {
-      takeCarFromPark(ticket);
+      return takeCarFromPark(ticket);
     } else {
       throw new IllegalTicketException(ExceptionMessage.ILLEGAL_TICKET);
     }
@@ -107,20 +115,25 @@ public class ParkingService {
         .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_TICKET));
   }
 
-  private void takeCarFromPark(Ticket ticket) throws NotFoundResourceException {
+  private Car takeCarFromPark(Ticket ticket) throws NotFoundResourceException {
     Parking parking = parkingRepository.findById(ticket.getParkingLotId())
         .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING));
+    Storage storage = storageRepository.findById(ticket.getStorageId())
+        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_STORAGE));
+    Car car = carRepository.findById(storage.getCarId())
+        .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_CAR));
     parking.upSize();
     parkingRepository.save(parking);
+    return car;
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   @Retryable(backoff = @Backoff(multiplier = 1.5))
-  public Ticket parkingCarByHelper(String userId, boolean byOrderForManager) {
+  public Ticket parkingCarByHelper(String userId, Car car) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
     List<Parking> parkings = getAllParking(userId);
-    Parking parking = parkingHelper.parking(parkings, byOrderForManager);
-    return parkingCarInPark(parking);
+    Parking parking = parkingHelper.parking(parkings);
+    return parkingCarInPark(parking, car);
   }
 
   public User addUser(String name, String role) {

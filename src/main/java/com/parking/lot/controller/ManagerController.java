@@ -1,5 +1,6 @@
 package com.parking.lot.controller;
 
+import com.parking.lot.entity.Car;
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.User;
@@ -28,10 +29,10 @@ public class ManagerController {
 
   @GetMapping("/{id}")
   public Result<Ticket> parkingCarByHelper(@PathVariable("id") String userId,
-      boolean byOrderForManager)
+      Car car)
       throws NotFoundResourceException {
     return new Result<Ticket>()
-        .getSuccessResult(parkingService.parkingCarByHelper(userId, byOrderForManager));
+        .getSuccessResult(parkingService.parkingCarByHelper(userId, car));
   }
 
   @PostMapping("/parking")

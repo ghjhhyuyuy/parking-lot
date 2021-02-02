@@ -1,5 +1,6 @@
 package com.parking.lot.controller;
 
+import com.parking.lot.entity.Car;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.vo.Result;
 import com.parking.lot.exception.NotFoundResourceException;
@@ -23,8 +24,8 @@ public class HelperController {
   }
 
   @GetMapping("/{id}")
-  public Result<Ticket> parkingCarByHelper(@PathVariable("id") String userId)
+  public Result<Ticket> parkingCarByHelper(@PathVariable("id") String userId, Car car)
       throws NotFoundResourceException {
-    return new Result<Ticket>().getSuccessResult(parkingService.parkingCarByHelper(userId, false));
+    return new Result<Ticket>().getSuccessResult(parkingService.parkingCarByHelper(userId, car));
   }
 }

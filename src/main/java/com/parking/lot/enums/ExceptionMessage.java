@@ -9,8 +9,10 @@ public enum ExceptionMessage {
   PARKING_OVER_SIZE("602", "parking over size"),
   NO_MATCHING_ROLE("607", "no matching role"),
   OUT_OF_SET("608", "there is no set in all parkings"),
-  ILLEGAL_SIZE("609","illegal size"),
-  NOT_MANAGER_USER("610","not manager user");
+  ILLEGAL_SIZE("609", "illegal size"),
+  NOT_MANAGER_USER("610", "not manager user"),
+  NOT_FOUND_CAR("611", "not found car"),
+  NOT_FOUND_STORAGE("612", "not found storage");
   private final String code;
   private final String message;
 

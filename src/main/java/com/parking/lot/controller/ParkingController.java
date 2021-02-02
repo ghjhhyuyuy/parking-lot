@@ -1,5 +1,6 @@
 package com.parking.lot.controller;
 
+import com.parking.lot.entity.Car;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.entity.vo.Result;
 import com.parking.lot.exception.NotFoundResourceException;
@@ -24,15 +25,14 @@ public class ParkingController {
   }
 
   @GetMapping("/{id}")
-  public Result<Ticket> parkingCarBySelf(@PathVariable("id") String parkingId)
+  public Result<Ticket> parkingCarBySelf(@PathVariable("id") String parkingId, Car car)
       throws NotFoundResourceException {
-    return new Result<Ticket>().getSuccessResult(parkingService.parkingCarBySelf(parkingId));
+    return new Result<Ticket>().getSuccessResult(parkingService.parkingCarBySelf(parkingId, car));
   }
 
   @PostMapping("/{id}")
-  public Result<Ticket> takeCar(@PathVariable("id") String ticketId)
+  public Result<Car> takeCar(@PathVariable("id") String ticketId)
       throws NotFoundResourceException {
-    parkingService.takeCar(ticketId);
-    return new Result<Ticket>().getSuccessResult(null);
+    return new Result<Car>().getSuccessResult(parkingService.takeCar(ticketId));
   }
 }
