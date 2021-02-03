@@ -19,6 +19,7 @@ import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.NoMatchingRoleException;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.NotParkingHelperException;
+import com.parking.lot.exception.NotRightCarException;
 import com.parking.lot.exception.OutOfSetException;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.repository.CarRepository;
@@ -180,8 +181,9 @@ class ParkingServiceTest {
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
     when(storageRepository.findById("1")).thenReturn(Optional.of(storage));
     when(carRepository.findById("test")).thenReturn(Optional.of(car));
-    boolean result = parkingService.takeCar("123", "test1");
-    assertFalse(result);
+    assertThrows(
+        NotRightCarException.class,
+        () -> parkingService.takeCar("123", "test1"));
   }
 
   @Test

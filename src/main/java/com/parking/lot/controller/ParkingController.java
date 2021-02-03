@@ -32,9 +32,9 @@ public class ParkingController {
   }
 
   @PostMapping("/{id}")
-  public Result<Boolean> takeCar(@PathVariable("id") String ticketId, String willTakeCarId)
+  public Result<Car> takeCar(@PathVariable("id") String ticketId, String willTakeCarId)
       throws NotFoundResourceException {
-    boolean canTake = parkingService.takeCar(ticketId, willTakeCarId);
-    return new Result<Boolean>().getSuccessResult(canTake);
+    Car canTake = parkingService.takeCar(ticketId, willTakeCarId);
+    return new Result<Car>().getSuccessResult(canTake);
   }
 }

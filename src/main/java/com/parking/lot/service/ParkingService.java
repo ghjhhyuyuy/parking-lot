@@ -16,6 +16,7 @@ import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.NoMatchingRoleException;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.NotParkingHelperException;
+import com.parking.lot.exception.NotRightCarException;
 import com.parking.lot.exception.OverSizeException;
 import com.parking.lot.repository.CarRepository;
 import com.parking.lot.repository.ParkingRepository;
@@ -81,11 +82,15 @@ public class ParkingService {
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   @Retryable(backoff = @Backoff(multiplier = 1.5))
-  public boolean takeCar(String ticketId, String carId)
+  public Car takeCar(String ticketId, String carId)
       throws IllegalTicketException, NotFoundResourceException {
     Ticket ticket = getTicketById(ticketId);
     if (ticket.checkTicket()) {
-      return takeCarFromPark(ticket).getId().equals(carId);
+      Car car = getCarByTicket(ticket);
+      if(car.getId().equals(carId)){
+        return takeCarFromPark(ticket);
+      }
+      throw new NotRightCarException();
     } else {
       throw new IllegalTicketException(ExceptionMessage.ILLEGAL_TICKET);
     }

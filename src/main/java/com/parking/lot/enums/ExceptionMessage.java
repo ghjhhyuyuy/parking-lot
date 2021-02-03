@@ -12,7 +12,8 @@ public enum ExceptionMessage {
   ILLEGAL_SIZE("609", "illegal size"),
   NOT_MANAGER_USER("610", "not manager user"),
   NOT_FOUND_CAR("611", "not found car"),
-  NOT_FOUND_STORAGE("612", "not found storage");
+  NOT_FOUND_STORAGE("612", "not found storage"),
+  NOT_RIGHT_CAR("613","not right car");
   private final String code;
   private final String message;
 
