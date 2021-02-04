@@ -5,20 +5,19 @@ import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.OutOfSetException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 public class SmartHelper extends ParkingHelper {
 
 
   @Override
   public Parking parking(List<Parking> parkings) {
-    return getMaxSetsParking(parkings)
-        .orElseThrow(() -> new OutOfSetException(ExceptionMessage.OUT_OF_SET));
+    return getMaxSetsParking(parkings);
   }
 
-  private Optional<Parking> getMaxSetsParking(List<Parking> parkings) {
+  private Parking getMaxSetsParking(List<Parking> parkings) {
     return parkings.stream().filter(parking -> parking.getSize() > 0)
-        .max(Comparator.comparingInt(Parking::getSize));
+        .max(Comparator.comparingInt(Parking::getSize))
+        .orElseThrow(() -> new OutOfSetException(ExceptionMessage.OUT_OF_SET));
   }
 
 }
