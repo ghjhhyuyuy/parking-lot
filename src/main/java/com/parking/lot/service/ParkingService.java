@@ -130,6 +130,7 @@ public class ParkingService {
     Parking parking = getParkingByTicket(ticket);
     parking.upSize();
     parkingRepository.save(parking);
+    ticketRepository.delete(ticket);
     return car;
   }
 
