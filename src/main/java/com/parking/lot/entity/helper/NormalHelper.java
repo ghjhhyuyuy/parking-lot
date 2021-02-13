@@ -13,7 +13,7 @@ public class NormalHelper extends ParkingHelper {
   }
 
   private Parking getParkingByOrder(List<Parking> parkings) {
-    return parkings.stream().filter(parking -> parking.getSize() > 0).findFirst()
+    return parkings.stream().filter(parking -> parking.getStorageList().size() > 0).findFirst()
         .orElseThrow(() -> new OutOfSetException(ExceptionMessage.OUT_OF_SET));
   }
 

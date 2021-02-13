@@ -1,7 +1,5 @@
 package com.parking.lot.entity;
 
-import com.parking.lot.util.GenerateID;
-import com.parking.lot.util.StorageUtil;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -23,9 +21,10 @@ public class Storage {
   private String carId;
   private String parkingId;
 
-  public static Storage saveCarInStorage(Parking parking,Car car) {
+  public static Storage saveCarInStorage(Parking parking, Car car) {
     Storage storage = parking.getStorageList().get(0);
     storage.carId = car.getId();
+    parking.getStorageList().remove(0);
     return storage;
   }
 

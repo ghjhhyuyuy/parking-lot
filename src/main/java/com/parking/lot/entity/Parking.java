@@ -1,5 +1,7 @@
 package com.parking.lot.entity;
 
+import static com.parking.lot.util.StorageUtil.generateStorageList;
+
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.IllegalSizeException;
 import com.parking.lot.exception.OverSizeException;
@@ -40,17 +42,6 @@ public class Parking {
       return new Parking(GenerateID.getUUID(), size, storageList);
     }
     throw new IllegalSizeException(ExceptionMessage.ILLEGAL_SIZE);
-  }
-
-  private static List<Storage> generateStorageList(int size, String parkingId) {
-    StorageUtil storageUtil = new StorageUtil();
-    List<Storage> storageList = new ArrayList<>();
-    for (int i = 0; i < size; i++) {
-      Storage storage = Storage.builder().id(GenerateID.getUUID()).zone(storageUtil.getZone())
-          .address(storageUtil.getAddress()).carId(null).parkingId(parkingId).build();
-      storageList.add(storage);
-    }
-    return storageList;
   }
 
   public AtomicInteger getAtomicIntegerSize() {

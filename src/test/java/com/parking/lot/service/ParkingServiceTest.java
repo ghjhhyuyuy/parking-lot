@@ -1,5 +1,6 @@
 package com.parking.lot.service;
 
+import static com.parking.lot.util.StorageUtil.generateStorageList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,6 +28,7 @@ import com.parking.lot.repository.RoleRepository;
 import com.parking.lot.repository.StorageRepository;
 import com.parking.lot.repository.TicketRepository;
 import com.parking.lot.repository.UserRepository;
+import com.parking.lot.util.GenerateID;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +57,9 @@ class ParkingServiceTest {
   StorageRepository storageRepository;
 
   public static Parking getParking() {
-    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").size(20).build();
+    String id = GenerateID.getUUID();
+    List<Storage> storageList = generateStorageList(5, id);
+    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").size(20).storageList(storageList).build();
   }
 
   @BeforeEach
@@ -70,11 +74,11 @@ class ParkingServiceTest {
       throws NotFoundResourceException {
     Car car = getCar();
     Parking parking = getParking();
-    int parkingEmptyNum = parking.getSize();
+    int parkingEmptyNum = parking.getStorageList().size();
     when(parkingRepository.findById(parking.getId())).thenReturn(Optional.of(parking));
     Ticket returnTicket = parkingService.parkingCarBySelf(parking.getId(), car);
     assertNotNull(returnTicket);
-    assertEquals(parkingEmptyNum - 1, parking.getSize());
+    assertEquals(parkingEmptyNum - 1, parking.getStorageList().size());
   }
 
   @Test
@@ -104,13 +108,13 @@ class ParkingServiceTest {
     Parking parking = getParking();
     Car car = getCar();
     Storage storage = getStorage();
-    int parkingEmptyNum = parking.getSize();
+    int parkingEmptyNum = parking.getStorageList().size();
     when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
     when(storageRepository.findById("1")).thenReturn(Optional.of(storage));
     when(carRepository.findById("test")).thenReturn(Optional.of(car));
     parkingService.takeCar("123", "test");
-    assertEquals(parkingEmptyNum + 1, parking.getSize());
+    assertEquals(parkingEmptyNum + 1, parking.getStorageList().size());
   }
 
   private Storage getStorage() {
@@ -225,14 +229,14 @@ class ParkingServiceTest {
     User normalHelper = getNormalUser();
     Car car = getCar();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
-    int initNumber = parkingList.get(0).getSize();
+    int initNumber = parkingList.get(0).getStorageList().size();
     Role role = getNormalRole();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), car);
     assertNotNull(returnTicket);
-    assertEquals(initNumber - 1, parkingList.get(0).getSize());
+    assertEquals(initNumber - 1, parkingList.get(0).getStorageList().size());
   }
 
   @Test
@@ -241,13 +245,13 @@ class ParkingServiceTest {
     Car car = getCar();
     Role role = getNormalRole();
     List<Parking> emptyFistParkingList = getParkingListWithFirstEmpty();
-    int initNumber = emptyFistParkingList.get(1).getSize();
+    int initNumber = emptyFistParkingList.get(1).getStorageList().size();
     when(parkingRepository.findAll()).thenReturn(emptyFistParkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), car);
     assertNotNull(returnTicket);
-    assertEquals(initNumber - 1, emptyFistParkingList.get(1).getSize());
+    assertEquals(initNumber - 1, emptyFistParkingList.get(1).getStorageList().size());
   }
 
   private Role getNormalRole() {
@@ -267,13 +271,13 @@ class ParkingServiceTest {
     Car car = getCar();
     Role role = getSmartRole();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
-    int initNumber = parkingList.get(parkingList.size() - 1).getSize();
+    int initNumber = parkingList.get(parkingList.size() - 1).getStorageList().size();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), car);
     assertNotNull(returnTicket);
-    assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getSize());
+    assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getStorageList().size());
   }
 
   @Test
@@ -372,10 +376,14 @@ class ParkingServiceTest {
   }
 
   private Parking getLargeSizeParking() {
-    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20000).build();
+    String id = GenerateID.getUUID();
+    List<Storage> storageList = generateStorageList(20, id);
+    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20000).storageList(storageList).build();
   }
 
   private Parking getFullParking() {
-    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(0).build();
+    String id = GenerateID.getUUID();
+    List<Storage> storageList = generateStorageList(0, id);
+    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20).storageList(storageList).build();
   }
 }
