@@ -1,6 +1,6 @@
 package com.parking.lot.service;
 
-import static com.parking.lot.entity.Storage.getStorage;
+import static com.parking.lot.entity.Storage.saveCarInStorage;
 import static com.parking.lot.entity.Ticket.createTicket;
 
 import com.parking.lot.entity.Car;
@@ -65,8 +65,7 @@ public class ParkingService {
   }
 
   private Ticket parkingCarInPark(Parking parking, Car car) {
-    Storage storage = getStorage(car);
-    parking.reduceSize();
+    Storage storage = saveCarInStorage(parking, car);
     carRepository.save(car);
     storageRepository.save(storage);
     Ticket ticket = createTicket(parking, storage);
@@ -87,7 +86,7 @@ public class ParkingService {
     Ticket ticket = getTicketById(ticketId);
     if (ticket.checkTicket()) {
       Car car = getCarByTicket(ticket);
-      if(car.getId().equals(carId)){
+      if (car.getId().equals(carId)) {
         return takeCarFromPark(ticket);
       }
       throw new NotRightCarException();
@@ -128,10 +127,18 @@ public class ParkingService {
   private Car takeCarFromPark(Ticket ticket) throws NotFoundResourceException {
     Car car = getCarByTicket(ticket);
     Parking parking = getParkingByTicket(ticket);
-    parking.upSize();
+    Storage storage = getStorageByTicket(ticket);
+    storage.removeCarId();
+    parking.getStorageList().add(storage);
     parkingRepository.save(parking);
     ticketRepository.delete(ticket);
     return car;
+  }
+
+  private Storage getStorageByTicket(Ticket ticket) {
+    return storageRepository.findById(ticket.getStorageId())
+        .orElseThrow(() -> new NotFoundResourceException(
+            ExceptionMessage.NOT_FOUND_STORAGE));
   }
 
   private Parking getParkingByTicket(Ticket ticket) {

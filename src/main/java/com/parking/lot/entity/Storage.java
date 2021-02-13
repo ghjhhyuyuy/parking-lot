@@ -21,10 +21,15 @@ public class Storage {
   private String zone;
   private String address;
   private String carId;
+  private String parkingId;
 
-  public static Storage getStorage(Car car) {
-    StorageUtil storageUtil = new StorageUtil();
-    return Storage.builder().id(GenerateID.getUUID()).zone(storageUtil.getZone())
-        .address(storageUtil.getAddress()).carId(car.getId()).build();
+  public static Storage saveCarInStorage(Parking parking,Car car) {
+    Storage storage = parking.getStorageList().get(0);
+    storage.carId = car.getId();
+    return storage;
+  }
+
+  public void removeCarId() {
+    this.carId = null;
   }
 }
