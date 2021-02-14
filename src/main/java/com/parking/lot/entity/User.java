@@ -1,6 +1,6 @@
 package com.parking.lot.entity;
 
-import com.parking.lot.util.GenerateID;
+import com.parking.lot.util.GenerateId;
 import com.parking.lot.util.TimeUtil;
 import java.time.format.DateTimeFormatter;
 import javax.persistence.Entity;
@@ -26,7 +26,7 @@ public class User {
   private String removeDate;
 
   public static User createUser(String name, String role) {
-    return new User(GenerateID.getUUID(), name, role, dateTimeFormatter.format(TimeUtil.getTime(0)),
+    return new User(GenerateId.getUUID(), name, role, dateTimeFormatter.format(TimeUtil.getTime(0)),
         null);
   }
 

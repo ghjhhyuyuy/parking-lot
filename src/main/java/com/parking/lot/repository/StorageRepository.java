@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface StorageRepository extends CrudRepository<Storage, String> {
 
 
+  void deleteByParkingId(String parkingId);
 }

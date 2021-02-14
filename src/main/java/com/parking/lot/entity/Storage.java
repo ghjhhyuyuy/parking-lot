@@ -21,7 +21,7 @@ public class Storage {
   private String carId;
   private String parkingId;
 
-  public static Storage saveCarInStorage(Parking parking, Car car) {
+  public static Storage getStorageAndSaveCarInThisStorage(Parking parking, Car car) {
     Storage storage = parking.getStorageList().get(0);
     storage.carId = car.getId();
     parking.getStorageList().remove(0);

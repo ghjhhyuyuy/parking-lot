@@ -1,6 +1,6 @@
 package com.parking.lot.entity;
 
-import com.parking.lot.util.GenerateID;
+import com.parking.lot.util.GenerateId;
 import com.parking.lot.util.TimeUtil;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,7 +29,7 @@ public class Ticket {
 
   public static Ticket createTicket(Parking parking, Storage storage) {
     return Ticket.builder()
-        .id(GenerateID.getUUID())
+        .id(GenerateId.getUUID())
         .parkingLotId(parking.getId())
         .timeoutDate(dateTimeFormatter.format(TimeUtil.getTime(ticket_time_hour)))
         .storageId(storage.getId())

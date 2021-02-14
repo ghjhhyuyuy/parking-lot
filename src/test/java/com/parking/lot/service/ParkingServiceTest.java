@@ -28,7 +28,7 @@ import com.parking.lot.repository.RoleRepository;
 import com.parking.lot.repository.StorageRepository;
 import com.parking.lot.repository.TicketRepository;
 import com.parking.lot.repository.UserRepository;
-import com.parking.lot.util.GenerateID;
+import com.parking.lot.util.GenerateId;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,7 +57,7 @@ class ParkingServiceTest {
   StorageRepository storageRepository;
 
   public static Parking getParking() {
-    String id = GenerateID.getUUID();
+    String id = GenerateId.getUUID();
     List<Storage> storageList = generateStorageList(5, id);
     return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").size(20).storageList(storageList).build();
   }
@@ -376,13 +376,13 @@ class ParkingServiceTest {
   }
 
   private Parking getLargeSizeParking() {
-    String id = GenerateID.getUUID();
+    String id = GenerateId.getUUID();
     List<Storage> storageList = generateStorageList(20, id);
     return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20000).storageList(storageList).build();
   }
 
   private Parking getFullParking() {
-    String id = GenerateID.getUUID();
+    String id = GenerateId.getUUID();
     List<Storage> storageList = generateStorageList(0, id);
     return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20).storageList(storageList).build();
   }

@@ -26,7 +26,7 @@ public class StorageUtil {
     StorageUtil storageUtil = new StorageUtil();
     List<Storage> storageList = new ArrayList<>();
     for (int i = 0; i < size; i++) {
-      Storage storage = Storage.builder().id(GenerateID.getUUID()).zone(storageUtil.getZone())
+      Storage storage = Storage.builder().id(GenerateId.getUUID()).zone(storageUtil.getZone())
           .address(storageUtil.getAddress()).carId(null).parkingId(parkingId).build();
       storageList.add(storage);
     }

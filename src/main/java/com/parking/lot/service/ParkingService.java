@@ -1,6 +1,6 @@
 package com.parking.lot.service;
 
-import static com.parking.lot.entity.Storage.saveCarInStorage;
+import static com.parking.lot.entity.Storage.getStorageAndSaveCarInThisStorage;
 import static com.parking.lot.entity.Ticket.createTicket;
 
 import com.parking.lot.entity.Car;
@@ -65,7 +65,7 @@ public class ParkingService {
   }
 
   private Ticket parkingCarInPark(Parking parking, Car car) {
-    Storage storage = saveCarInStorage(parking, car);
+    Storage storage = getStorageAndSaveCarInThisStorage(parking, car);
     carRepository.save(car);
     storageRepository.save(storage);
     Ticket ticket = createTicket(parking, storage);
@@ -87,7 +87,7 @@ public class ParkingService {
     if (ticket.checkTicket()) {
       Car car = getCarByTicket(ticket);
       if (car.getId().equals(carId)) {
-        return takeCarFromPark(ticket);
+        return takeCarFromPark(ticket, car);
       }
       throw new NotRightCarException();
     } else {
@@ -124,15 +124,19 @@ public class ParkingService {
         .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_TICKET));
   }
 
-  private Car takeCarFromPark(Ticket ticket) throws NotFoundResourceException {
-    Car car = getCarByTicket(ticket);
-    Parking parking = getParkingByTicket(ticket);
-    Storage storage = getStorageByTicket(ticket);
-    storage.removeCarId();
-    parking.getStorageList().add(storage);
+  private Car takeCarFromPark(Ticket ticket, Car car) throws NotFoundResourceException {
+    Parking parking = reuseStorageInThisParking(ticket);
     parkingRepository.save(parking);
     ticketRepository.delete(ticket);
     return car;
+  }
+
+  private Parking reuseStorageInThisParking(Ticket ticket) {
+    Storage storage = getStorageByTicket(ticket);
+    storage.removeCarId();
+    Parking parking = getParkingByTicket(ticket);
+    parking.getStorageList().add(storage);
+    return parking;
   }
 
   private Storage getStorageByTicket(Ticket ticket) {
@@ -156,10 +160,14 @@ public class ParkingService {
   @Transactional(isolation = Isolation.SERIALIZABLE)
   @Retryable(backoff = @Backoff(multiplier = 1.5))
   public Ticket parkingCarByHelper(String userId, Car car) {
+    Parking parking = getParkingByHelper(userId);
+    return parkingCarInPark(parking, car);
+  }
+
+  private Parking getParkingByHelper(String userId) {
     ParkingHelper parkingHelper = getParkingHelper(userId);
     List<Parking> parkings = getAllParking(userId);
-    Parking parking = parkingHelper.parking(parkings);
-    return parkingCarInPark(parking, car);
+    return parkingHelper.parking(parkings);
   }
 
   public User addUser(String name, String role) {
@@ -180,6 +188,11 @@ public class ParkingService {
   }
 
   public void removeParking(String parkingId) {
+    deleteRelativeStorage(parkingId);
     parkingRepository.deleteById(parkingId);
+  }
+
+  private void deleteRelativeStorage(String parkingId) {
+    storageRepository.deleteByParkingId(parkingId);
   }
 }
