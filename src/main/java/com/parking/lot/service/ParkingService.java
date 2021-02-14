@@ -18,6 +18,7 @@ import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.exception.NotParkingHelperException;
 import com.parking.lot.exception.NotRightCarException;
 import com.parking.lot.exception.OverSizeException;
+import com.parking.lot.exception.StillCarInParkingException;
 import com.parking.lot.repository.CarRepository;
 import com.parking.lot.repository.ParkingRepository;
 import com.parking.lot.repository.RoleRepository;
@@ -187,12 +188,17 @@ public class ParkingService {
     return parkingRepository.save(parking);
   }
 
+  @Transactional
   public void removeParking(String parkingId) {
     deleteRelativeStorage(parkingId);
     parkingRepository.deleteById(parkingId);
   }
 
-  private void deleteRelativeStorage(String parkingId) {
-    storageRepository.deleteByParkingId(parkingId);
+  private void deleteRelativeStorage(String parkingId) throws StillCarInParkingException {
+    Storage storage = storageRepository.findByParkingId(parkingId);
+    if (storage.getCarId() == null) {
+      storageRepository.delete(storage);
+    }
+    throw new StillCarInParkingException();
   }
 }

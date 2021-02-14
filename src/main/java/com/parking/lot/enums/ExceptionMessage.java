@@ -13,7 +13,8 @@ public enum ExceptionMessage {
   NOT_MANAGER_USER("610", "not manager user"),
   NOT_FOUND_CAR("611", "not found car"),
   NOT_FOUND_STORAGE("612", "not found storage"),
-  NOT_RIGHT_CAR("613","not right car");
+  NOT_RIGHT_CAR("613", "not right car"),
+  STILL_CAR_IN_PARKING("614", "can not remove Parking because still car in Parking");
   private final String code;
   private final String message;
 
