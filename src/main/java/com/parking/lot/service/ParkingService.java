@@ -195,10 +195,13 @@ public class ParkingService {
   }
 
   private void deleteRelativeStorage(String parkingId) throws StillCarInParkingException {
-    Storage storage = storageRepository.findByParkingId(parkingId);
-    if (storage.getCarId() == null) {
-      storageRepository.delete(storage);
+    List<Storage> storageList = storageRepository.findByParkingId(parkingId);
+    for (Storage storage : storageList) {
+      if (storage.getCarId() == null) {
+        storageRepository.delete(storage);
+      } else {
+        throw new StillCarInParkingException();
+      }
     }
-    throw new StillCarInParkingException();
   }
 }
