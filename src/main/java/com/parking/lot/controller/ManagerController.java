@@ -27,7 +27,7 @@ public class ManagerController {
     this.parkingService = parkingService;
   }
 
-  @GetMapping("/{id}")
+  @PostMapping("/{id}")
   public Result<Ticket> parkingCarByHelper(@PathVariable("id") String userId,
       Car car)
       throws NotFoundResourceException {
