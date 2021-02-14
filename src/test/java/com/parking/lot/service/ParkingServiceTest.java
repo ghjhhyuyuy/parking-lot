@@ -59,7 +59,8 @@ class ParkingServiceTest {
   public static Parking getParking() {
     String id = GenerateId.getUUID();
     List<Storage> storageList = generateStorageList(5, id);
-    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").size(20).storageList(storageList).build();
+    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").size(20)
+        .storageList(storageList).build();
   }
 
   @BeforeEach
@@ -74,11 +75,12 @@ class ParkingServiceTest {
       throws NotFoundResourceException {
     Car car = getCar();
     Parking parking = getParking();
-    int parkingEmptyNum = parking.getStorageList().size();
+    List<Parking> parkings = Collections.singletonList(parking);
+    int parkingEmptyNum = getStorageListSizeInFirstParking(parkings);
     when(parkingRepository.findById(parking.getId())).thenReturn(Optional.of(parking));
     Ticket returnTicket = parkingService.parkingCarBySelf(parking.getId(), car);
     assertNotNull(returnTicket);
-    assertEquals(parkingEmptyNum - 1, parking.getStorageList().size());
+    assertEquals(parkingEmptyNum - 1, getStorageListSizeInFirstParking(parkings));
   }
 
   @Test
@@ -108,21 +110,14 @@ class ParkingServiceTest {
     Parking parking = getParking();
     Car car = getCar();
     Storage storage = getStorage();
-    int parkingEmptyNum = parking.getStorageList().size();
+    List<Parking> parkings = Collections.singletonList(parking);
+    int parkingEmptyNum = getStorageListSizeInFirstParking(parkings);
     when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
     when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
     when(storageRepository.findById("1")).thenReturn(Optional.of(storage));
     when(carRepository.findById("test")).thenReturn(Optional.of(car));
     parkingService.takeCar("123", "test");
-    assertEquals(parkingEmptyNum + 1, parking.getStorageList().size());
-  }
-
-  private Storage getStorage() {
-    return Storage.builder().carId("test").address("3").zone("A").id("1").build();
-  }
-
-  private Car getCar() {
-    return Car.builder().id("test").brand("奔驰").color("黑").build();
+    assertEquals(parkingEmptyNum + 1, getStorageListSizeInFirstParking(parkings));
   }
 
   @Test
@@ -211,11 +206,6 @@ class ParkingServiceTest {
         () -> parkingService.getAllParking(anyString()));
   }
 
-  private User getNotParkingHelperUser() {
-    return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
-        .createDate("2020-10-12 15:33:33").removeDate(null).role("4").build();
-  }
-
   @Test
   void should_throw_notFoundResourceException_when_not_found_user() {
     when(userRepository.findById(anyString())).thenReturn(Optional.empty());
@@ -229,14 +219,14 @@ class ParkingServiceTest {
     User normalHelper = getNormalUser();
     Car car = getCar();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
-    int initNumber = parkingList.get(0).getStorageList().size();
+    int initNumber = getStorageListSizeInFirstParking(parkingList);
     Role role = getNormalRole();
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), car);
     assertNotNull(returnTicket);
-    assertEquals(initNumber - 1, parkingList.get(0).getStorageList().size());
+    assertEquals(initNumber - 1, getStorageListSizeInFirstParking(parkingList));
   }
 
   @Test
@@ -245,24 +235,13 @@ class ParkingServiceTest {
     Car car = getCar();
     Role role = getNormalRole();
     List<Parking> emptyFistParkingList = getParkingListWithFirstEmpty();
-    int initNumber = emptyFistParkingList.get(1).getStorageList().size();
+    int initNumber = getStorageListSizeInSecondParking(emptyFistParkingList);
     when(parkingRepository.findAll()).thenReturn(emptyFistParkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), car);
     assertNotNull(returnTicket);
-    assertEquals(initNumber - 1, emptyFistParkingList.get(1).getStorageList().size());
-  }
-
-  private Role getNormalRole() {
-    return Role.builder().role("NORMAL_HELPER").build();
-  }
-
-  private List<Parking> getParkingListWithFirstEmpty() {
-    Parking parking = getFullParking();
-    List<Parking> parkings = new ArrayList<>(Collections.singletonList(parking));
-    parkings.add(getParking());
-    return parkings;
+    assertEquals(initNumber - 1, getStorageListSizeInSecondParking(emptyFistParkingList));
   }
 
   @Test
@@ -271,13 +250,13 @@ class ParkingServiceTest {
     Car car = getCar();
     Role role = getSmartRole();
     List<Parking> parkingList = getParkingListWithLargeParkingInLast();
-    int initNumber = parkingList.get(parkingList.size() - 1).getStorageList().size();
+    int initNumber = getStorageListSizeInLastParking(parkingList);
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), car);
     assertNotNull(returnTicket);
-    assertEquals(initNumber - 1, parkingList.get(parkingList.size() - 1).getStorageList().size());
+    assertEquals(initNumber - 1, getStorageListSizeInLastParking(parkingList));
   }
 
   @Test
@@ -293,15 +272,6 @@ class ParkingServiceTest {
     assertNotNull(returnTicket);
   }
 
-  private Role getManagerRole() {
-    return Role.builder().role("MANGER").build();
-  }
-
-  private User getManager() {
-    return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
-        .createDate("2020-10-12 15:33:33").removeDate(null).role("3").build();
-  }
-
   @Test
   void should_throw_outOfSetException_when_given_full_parkings_with_smart_helper() {
     User smartHelper = getSmartUser();
@@ -313,10 +283,6 @@ class ParkingServiceTest {
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     assertThrows(OutOfSetException.class,
         () -> parkingService.parkingCarByHelper(anyString(), car));
-  }
-
-  private Role getSmartRole() {
-    return Role.builder().role("SMART_HELPER").build();
   }
 
   @Test
@@ -332,9 +298,53 @@ class ParkingServiceTest {
         () -> parkingService.parkingCarByHelper(anyString(), car));
   }
 
-  private List<Parking> getFullParkingList() {
+  private int getStorageListSizeInFirstParking(List<Parking> parkingList) {
+    return parkingList.get(0).getStorageList().size();
+  }
+
+  private int getStorageListSizeInSecondParking(List<Parking> parkingList) {
+    return parkingList.get(1).getStorageList().size();
+  }
+
+  private int getStorageListSizeInLastParking(List<Parking> parkingList) {
+    return parkingList.get(parkingList.size() - 1).getStorageList().size();
+  }
+
+  private Role getNormalRole() {
+    return Role.builder().role("NORMAL_HELPER").build();
+  }
+
+  private Role getSmartRole() {
+    return Role.builder().role("SMART_HELPER").build();
+  }
+
+  private Role getManagerRole() {
+    return Role.builder().role("MANGER").build();
+  }
+
+  private List<Parking> getParkingListWithFirstEmpty() {
     Parking parking = getFullParking();
-    return new ArrayList<>(Collections.nCopies(3, parking));
+    List<Parking> parkings = new ArrayList<>(Collections.singletonList(parking));
+    parkings.add(getParking());
+    return parkings;
+  }
+
+  private Storage getStorage() {
+    return Storage.builder().carId("test").address("3").zone("A").id("1").build();
+  }
+
+  private Car getCar() {
+    return Car.builder().id("test").brand("奔驰").color("黑").build();
+  }
+
+  private User getManager() {
+    return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
+        .createDate("2020-10-12 15:33:33").removeDate(null).role("3").build();
+  }
+
+  private User getNotParkingHelperUser() {
+    return User.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").name("Tom")
+        .createDate("2020-10-12 15:33:33").removeDate(null).role("4").build();
   }
 
   private User getSmartUser() {
@@ -368,6 +378,11 @@ class ParkingServiceTest {
         .build();
   }
 
+  private List<Parking> getFullParkingList() {
+    Parking parking = getFullParking();
+    return new ArrayList<>(Collections.nCopies(3, parking));
+  }
+
   private List<Parking> getParkingListWithLargeParkingInLast() {
     Parking parking = getParking();
     List<Parking> parkings = new ArrayList<>(Collections.nCopies(3, parking));
@@ -378,12 +393,14 @@ class ParkingServiceTest {
   private Parking getLargeSizeParking() {
     String id = GenerateId.getUUID();
     List<Storage> storageList = generateStorageList(20, id);
-    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20000).storageList(storageList).build();
+    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20000)
+        .storageList(storageList).build();
   }
 
   private Parking getFullParking() {
     String id = GenerateId.getUUID();
     List<Storage> storageList = generateStorageList(0, id);
-    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20).storageList(storageList).build();
+    return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20)
+        .storageList(storageList).build();
   }
 }
