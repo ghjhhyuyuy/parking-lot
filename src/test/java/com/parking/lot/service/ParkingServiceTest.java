@@ -224,7 +224,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), car);
+    Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, getStorageListSizeInFirstParking(parkingList));
   }
@@ -239,7 +239,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(emptyFistParkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), car);
+    Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, getStorageListSizeInSecondParking(emptyFistParkingList));
   }
@@ -254,7 +254,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), car);
+    Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
     assertNotNull(returnTicket);
     assertEquals(initNumber - 1, getStorageListSizeInLastParking(parkingList));
   }
@@ -268,7 +268,7 @@ class ParkingServiceTest {
     when(parkingRepository.findAll()).thenReturn(parkingList);
     when(userRepository.findById(anyString())).thenReturn(Optional.of(manager));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-    Ticket returnTicket = parkingService.parkingCarByHelper(anyString(), car);
+    Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
     assertNotNull(returnTicket);
   }
 
@@ -282,7 +282,7 @@ class ParkingServiceTest {
     when(userRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     assertThrows(OutOfSetException.class,
-        () -> parkingService.parkingCarByHelper(anyString(), car));
+        () -> parkingService.parkingCarByStaff(anyString(), car));
   }
 
   @Test
@@ -295,7 +295,7 @@ class ParkingServiceTest {
     when(userRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
     when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
     assertThrows(OutOfSetException.class,
-        () -> parkingService.parkingCarByHelper(anyString(), car));
+        () -> parkingService.parkingCarByStaff(anyString(), car));
   }
 
   private int getStorageListSizeInFirstParking(List<Parking> parkingList) {
