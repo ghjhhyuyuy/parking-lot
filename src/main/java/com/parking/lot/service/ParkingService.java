@@ -156,18 +156,6 @@ public class ParkingService {
         return parkingHelper.parking(parkings);
     }
 
-    public User addUser(String name, String role) {
-        User user = User.createUser(name, role);
-        return userRepository.save(user);
-    }
-
-    public User removeUser(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER));
-        user = User.removeUser(user);
-        return userRepository.save(user);
-    }
-
     public Parking addParking(int size) {
         Parking parking = Parking.createParking(size);
         return parkingRepository.save(parking);

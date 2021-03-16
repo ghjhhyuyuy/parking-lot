@@ -16,7 +16,6 @@ public class Storage {
 
   @Id
   private String id;
-  private String zone;
   private String address;
   private String carId;
   private String parkingId;

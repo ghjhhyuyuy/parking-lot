@@ -17,6 +17,4 @@ import lombok.NoArgsConstructor;
 public class Car {
   @Id
   private String id;
-  private String color;
-  private String brand;
 }
