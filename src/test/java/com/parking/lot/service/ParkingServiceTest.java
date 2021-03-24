@@ -34,11 +34,18 @@ class ParkingServiceTest {
     @Mock
     StorageRepository storageRepository;
 
-    public static Parking getParking() {
-        String id = GenerateId.getUUID();
-        List<Storage> storageList = generateStorageList(5, id);
-        return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").size(20)
+    public Parking getParking() {
+        Storage storage = getStorage();
+        Storage emptyStorage = getEmptyStorage();
+        List<Storage> storageList = new ArrayList<>();
+        storageList.add(storage);
+        storageList.add(emptyStorage);
+        return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").emptyNumber(20)
                 .storageList(storageList).build();
+    }
+
+    private Storage getEmptyStorage() {
+        return Storage.builder().address("4").id("2").build();
     }
 
     @BeforeEach
@@ -140,11 +147,17 @@ class ParkingServiceTest {
     void should_throw_illegalTicketException_when_not_right_ticket() {
         Ticket ticket = getWrongTicket();
         Parking parking = getParking();
+        Storage storage = getWrongStorage();
         when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
         when(parkingRepository.findById("123")).thenReturn(Optional.of(parking));
+        when(storageRepository.findById("2")).thenReturn(Optional.of(storage));
         assertThrows(
                 IllegalTicketException.class,
                 () -> parkingService.takeCar("123", "test"));
+    }
+
+    private Storage getWrongStorage() {
+        return Storage.builder().carId("test").address("3").id("B").build();
     }
 
     @Test
@@ -268,15 +281,15 @@ class ParkingServiceTest {
     }
 
     private int getStorageListSizeInFirstParking(List<Parking> parkingList) {
-        return parkingList.get(0).getStorageList().size();
+        return parkingList.get(0).getEmptyNumber();
     }
 
     private int getStorageListSizeInSecondParking(List<Parking> parkingList) {
-        return parkingList.get(1).getStorageList().size();
+        return parkingList.get(1).getEmptyNumber();
     }
 
     private int getStorageListSizeInLastParking(List<Parking> parkingList) {
-        return parkingList.get(parkingList.size() - 1).getStorageList().size();
+        return parkingList.get(parkingList.size() - 1).getEmptyNumber();
     }
 
     private Role getNormalRole() {
@@ -326,7 +339,7 @@ class ParkingServiceTest {
                 .id(UUID.randomUUID().toString())
                 .parkingLotId("123")
                 .timeoutDate("2021-01-18 20:20:20")
-                .storageId("1")
+                .storageId("2")
                 .build();
     }
 
@@ -344,12 +357,12 @@ class ParkingServiceTest {
 
     private List<Parking> getFullParkingList() {
         Parking parking = getFullParking();
-        return new ArrayList<>(Collections.nCopies(3, parking));
+        return new ArrayList<>(Collections.singletonList(parking));
     }
 
     private List<Parking> getParkingListWithLargeParkingInLast() {
         Parking parking = getParking();
-        List<Parking> parkings = new ArrayList<>(Collections.nCopies(3, parking));
+        List<Parking> parkings = new ArrayList<>(Collections.singletonList( parking));
         parkings.add(getLargeSizeParking());
         return parkings;
     }
@@ -357,14 +370,14 @@ class ParkingServiceTest {
     private Parking getLargeSizeParking() {
         String id = GenerateId.getUUID();
         List<Storage> storageList = generateStorageList(20, id);
-        return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20000)
+        return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").emptyNumber(20000)
                 .storageList(storageList).build();
     }
 
     private Parking getFullParking() {
         String id = GenerateId.getUUID();
         List<Storage> storageList = generateStorageList(0, id);
-        return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").size(20)
+        return Parking.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096c").emptyNumber(0)
                 .storageList(storageList).build();
     }
 }

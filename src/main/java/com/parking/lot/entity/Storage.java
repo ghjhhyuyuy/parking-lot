@@ -20,14 +20,11 @@ public class Storage {
   private String carId;
   private String parkingId;
 
-  public static Storage getStorageAndSaveCarInThisStorage(Parking parking, Car car) {
-    Storage storage = parking.getStorageList().get(0);
-    storage.carId = car.getId();
-    parking.getStorageList().remove(0);
-    return storage;
-  }
-
   public void removeCarId() {
     this.carId = null;
+  }
+
+  public void parkingCar(String id) {
+    this.carId = id;
   }
 }

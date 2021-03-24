@@ -11,7 +11,7 @@ public class StorageUtil {
     private final Random random = new Random();
 
 
-    public String getAddress() {
+    private String getAddress() {
         int num = random.nextInt(10);
         return String.valueOf(num);
     }

@@ -27,24 +27,16 @@ public class Parking {
 
   @Id
   private String id;
-  private int size;
+  private int emptyNumber;
   @OneToMany(mappedBy = "parkingId", cascade = {CascadeType.MERGE})
   @NotFound(action = NotFoundAction.IGNORE)
   private List<Storage> storageList;
 
-  public static Parking createParking(int size) {
-    if (size > 0) {
-      String id = GenerateId.getUUID();
-      List<Storage> storageList = generateStorageList(size, id);
-      return new Parking(GenerateId.getUUID(), size, storageList);
-    }
-    throw new IllegalSizeException(ExceptionMessage.ILLEGAL_SIZE);
+  public void increaseNum() {
+    emptyNumber++;
   }
 
-  public void ifSizeMoreThanZero() {
-    if (this.storageList.size() > 0) {
-      return;
-    }
-    throw new OverSizeException(ExceptionMessage.PARKING_OVER_SIZE);
+  public void reduceNum() {
+    emptyNumber--;
   }
 }

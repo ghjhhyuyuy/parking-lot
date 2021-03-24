@@ -16,7 +16,7 @@ public class SmartHelper extends ParkingHelper {
 
   private Parking getMaxSetsParking(List<Parking> parkings) {
     return parkings.stream().filter(parking -> parking.getStorageList().size() > 0)
-        .max(Comparator.comparingInt(Parking::getSize))
+        .max(Comparator.comparingInt(Parking::getEmptyNumber))
         .orElseThrow(() -> new OutOfSetException(ExceptionMessage.OUT_OF_SET));
   }
 

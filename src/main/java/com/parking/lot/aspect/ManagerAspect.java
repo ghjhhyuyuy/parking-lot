@@ -22,7 +22,7 @@ public class ManagerAspect {
     this.userRepository = userRepository;
   }
 
-  @Before("execution(public * com.parking.lot.controller.ManagerController.*(..))")
+  @Before("execution(public * com.parking.lot.controller.UserController.*(..))||execution(public * com.parking.lot.controller.ParkingController.*Parking(..))")
   public void before(JoinPoint joinPoint) {
     String id = getParamUserId(joinPoint);
     User user = userRepository.findById(id)

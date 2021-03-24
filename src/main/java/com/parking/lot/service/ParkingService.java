@@ -6,6 +6,8 @@ import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.enums.RoleType;
 import com.parking.lot.exception.*;
 import com.parking.lot.repository.*;
+import com.parking.lot.util.GenerateId;
+import com.parking.lot.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -13,11 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static com.parking.lot.entity.Storage.getStorageAndSaveCarInThisStorage;
-import static com.parking.lot.entity.Ticket.createTicket;
+import static com.parking.lot.util.StorageUtil.generateStorageList;
 
 @Service
 public class ParkingService {
@@ -46,18 +49,34 @@ public class ParkingService {
     public Ticket parkingCarBySelf(String parkingId, Car car)
             throws OverSizeException, NotFoundResourceException {
         Parking parking = getParkingById(parkingId);
-        parking.ifSizeMoreThanZero();
+        ifSizeMoreThanZero(parking);
         return parkingCarInPark(parking, car);
+    }
+
+    private void ifSizeMoreThanZero(Parking parking) {
+        if (parking.getEmptyNumber() > 0) {
+            return;
+        }
+        throw new OverSizeException(ExceptionMessage.PARKING_OVER_SIZE);
     }
 
     private Ticket parkingCarInPark(Parking parking, Car car) {
         Storage storage = getStorageAndSaveCarInThisStorage(parking, car);
         carRepository.save(car);
         storageRepository.save(storage);
-        Ticket ticket = createTicket(parking, storage);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+                .ofPattern("yyyy-MM-dd HH:mm:ss");
+        Ticket ticket = new Ticket(GenerateId.getUUID(), parking.getId(), dateTimeFormatter.format(TimeUtil.getTime(0)), storage.getId());
         ticketRepository.save(ticket);
         parkingRepository.save(parking);
         return ticket;
+    }
+
+    private Storage getStorageAndSaveCarInThisStorage(Parking parking, Car car) {
+        Storage storage = parking.getStorageList().stream().filter(theStorage -> theStorage.getCarId() == null).collect(Collectors.toList()).get(0);
+        storage.parkingCar(car.getId());
+        parking.reduceNum();
+        return storage;
     }
 
     private Parking getParkingById(String parkingId) throws NotFoundResourceException {
@@ -70,7 +89,7 @@ public class ParkingService {
     public Car takeCar(String ticketId, String carId)
             throws IllegalTicketException, NotFoundResourceException {
         Ticket ticket = getTicketById(ticketId);
-        if (ticket.checkTicket()) {
+        if (checkTicket(ticket)) {
             Car car = getCarByTicket(ticket);
             if (car.getId().equals(carId)) {
                 return takeCarFromPark(ticket, car);
@@ -79,6 +98,12 @@ public class ParkingService {
         } else {
             throw new IllegalTicketException(ExceptionMessage.ILLEGAL_TICKET);
         }
+    }
+
+    private boolean checkTicket(Ticket ticket) {
+        Parking parking = parkingRepository.findById(ticket.getParkingLotId()).orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING));
+        Storage storage = storageRepository.findById(ticket.getStorageId()).orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_STORAGE));
+        return parking.getStorageList().stream().filter(theStorage -> theStorage.getId().equals(storage.getId())).count() == 1;
     }
 
     public List<Parking> getAllParking(String userId)
@@ -121,7 +146,7 @@ public class ParkingService {
         Storage storage = getStorageByTicket(ticket);
         storage.removeCarId();
         Parking parking = getParkingByTicket(ticket);
-        parking.getStorageList().add(storage);
+        parking.increaseNum();
         return parking;
     }
 
@@ -157,8 +182,17 @@ public class ParkingService {
     }
 
     public Parking addParking(int size) {
-        Parking parking = Parking.createParking(size);
+        Parking parking = createParking(size);
         return parkingRepository.save(parking);
+    }
+
+    private Parking createParking(int size) {
+        if (size > 0) {
+            String id = GenerateId.getUUID();
+            List<Storage> storageList = generateStorageList(size, id);
+            return new Parking(GenerateId.getUUID(), size, storageList);
+        }
+        throw new IllegalSizeException(ExceptionMessage.ILLEGAL_SIZE);
     }
 
     @Transactional
