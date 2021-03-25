@@ -151,12 +151,8 @@ class ParkingServiceTest {
                     () -> parkingService.takeCar("123", "test"));
         }
 
-        private Storage getWrongStorage() {
-            return Storage.builder().carId("test").address("3").id("B").build();
-        }
-
         @Test
-        void should_return_false_when_not_take_right_car() {
+        void should_return_NotRightCarException_when_not_take_right_car() {
             Ticket ticket = getRightTicket();
             Parking parking = getParking();
             Car car = getCar();
@@ -314,6 +310,10 @@ class ParkingServiceTest {
 
     private Storage getEmptyStorage() {
         return Storage.builder().address("4").id("2").build();
+    }
+
+    private Storage getWrongStorage() {
+        return Storage.builder().carId("test").address("3").id("B").build();
     }
 
     private Car getCar() {
