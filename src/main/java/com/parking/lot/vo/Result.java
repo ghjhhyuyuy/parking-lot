@@ -1,4 +1,4 @@
-package com.parking.lot.entity.vo;
+package com.parking.lot.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

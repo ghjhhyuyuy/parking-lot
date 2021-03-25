@@ -3,7 +3,7 @@ package com.parking.lot.controller;
 import com.parking.lot.entity.Car;
 import com.parking.lot.entity.Parking;
 import com.parking.lot.entity.Ticket;
-import com.parking.lot.entity.vo.Result;
+import com.parking.lot.vo.Result;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.service.ParkingService;
 import org.springframework.beans.factory.annotation.Autowired;

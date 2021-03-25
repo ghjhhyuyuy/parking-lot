@@ -1,8 +1,8 @@
 package com.parking.lot.util;
 
-import com.parking.lot.entity.helper.NormalHelper;
-import com.parking.lot.entity.helper.ParkingHelper;
-import com.parking.lot.entity.helper.SmartHelper;
+import com.parking.lot.helper.NormalHelper;
+import com.parking.lot.helper.ParkingHelper;
+import com.parking.lot.helper.SmartHelper;
 
 public class GetParkingHelper {
 

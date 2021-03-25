@@ -1,6 +1,6 @@
 package com.parking.lot.handler;
 
-import com.parking.lot.entity.vo.Result;
+import com.parking.lot.vo.Result;
 import com.parking.lot.exception.IllegalSizeException;
 import com.parking.lot.exception.IllegalTicketException;
 import com.parking.lot.exception.MyException;

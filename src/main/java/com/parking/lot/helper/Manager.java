@@ -1,4 +1,4 @@
-package com.parking.lot.entity.helper;
+package com.parking.lot.helper;
 
 import com.parking.lot.entity.Parking;
 import com.parking.lot.util.GetParkingHelper;

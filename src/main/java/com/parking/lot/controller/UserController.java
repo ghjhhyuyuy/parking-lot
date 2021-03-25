@@ -1,7 +1,7 @@
 package com.parking.lot.controller;
 
 import com.parking.lot.entity.User;
-import com.parking.lot.entity.vo.Result;
+import com.parking.lot.vo.Result;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

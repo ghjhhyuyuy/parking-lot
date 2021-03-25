@@ -1,7 +1,7 @@
 package com.parking.lot.service;
 
 import com.parking.lot.entity.*;
-import com.parking.lot.entity.helper.ParkingHelper;
+import com.parking.lot.helper.ParkingHelper;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.enums.RoleType;
 import com.parking.lot.exception.*;
@@ -73,7 +73,8 @@ public class ParkingService {
     }
 
     private Storage getStorageAndSaveCarInThisStorage(Parking parking, Car car) {
-        Storage storage = parking.getStorageList().stream().filter(theStorage -> theStorage.getCarId() == null).collect(Collectors.toList()).get(0);
+        Storage storage = parking.getStorageList().stream()
+                .filter(theStorage -> theStorage.getCarId() == null).collect(Collectors.toList()).get(0);
         storage.parkingCar(car.getId());
         parking.reduceNum();
         return storage;
@@ -90,14 +91,18 @@ public class ParkingService {
             throws IllegalTicketException, NotFoundResourceException {
         Ticket ticket = getTicketById(ticketId);
         if (checkTicket(ticket)) {
-            Car car = getCarByTicket(ticket);
-            if (car.getId().equals(carId)) {
-                return takeCarFromPark(ticket, car);
-            }
-            throw new NotRightCarException();
+            return returnCarIfSameCar(ticket,carId);
         } else {
             throw new IllegalTicketException(ExceptionMessage.ILLEGAL_TICKET);
         }
+    }
+
+    private Car returnCarIfSameCar(Ticket ticket, String carId) {
+        Car car = getCarByTicket(ticket);
+        if (car.getId().equals(carId)) {
+            return takeCarFromPark(ticket, car);
+        }
+        throw new NotRightCarException();
     }
 
     private boolean checkTicket(Ticket ticket) {
