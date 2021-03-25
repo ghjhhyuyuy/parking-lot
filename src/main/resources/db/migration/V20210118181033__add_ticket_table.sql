@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `ticket`
 (
     `id`                varchar(36) NOT NULL,
-    `timeout_date`      varchar(36) NOT NULL,
+    `entry_date`        varchar(36) NOT NULL,
     `parking_lot_id`    varchar(36) NOT NULL,
     `storage_id`        varchar(36) NOT NULL,
     PRIMARY KEY (`id`),
