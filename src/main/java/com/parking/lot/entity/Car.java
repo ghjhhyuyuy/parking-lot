@@ -1,12 +1,9 @@
 package com.parking.lot.entity;
 
+import lombok.*;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
@@ -15,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 public class Car {
-  @Id
-  private String id;
+    @Id
+    private String id;
 }
