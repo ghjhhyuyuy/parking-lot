@@ -20,7 +20,7 @@ public class Ticket {
 
   @Id
   private String id;
-  private String timeoutDate;
+  private String entryTime;
   private String parkingLotId;
   private String storageId;
 
