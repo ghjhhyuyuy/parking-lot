@@ -2,9 +2,9 @@
 ###这是一个训练项目，完成停车场相关功能：  
 ###数据库部分：
 数据表设计  
- *  user（id、name、role[外键]、create_date、remove_date）  
+ *  staff（id、name、role[外键]、create_date、remove_date）  
  *  role（id、role）  
- *  parking（id、size）  
+ *  basement（id、size）  
  *  ticket（id、entry_date、parking_lot_id[外键]、storage_id[外键])
  *  car (id)
  *  storage (id、address、car_id[外键]、parking_id[外键])
@@ -23,3 +23,14 @@ How to start this project:
 3.run LotApplication
 
 then you can visit this project in localhost:8080
+
+
+-------------------
+本次做的修改：
+1.拆分了controller
+2.拆分了service
+3.去掉了没必要的属性
+4.给parking增加了emptyNumber字段
+5.修改了校验ticket方式
+6.整理test
+7.更新readme

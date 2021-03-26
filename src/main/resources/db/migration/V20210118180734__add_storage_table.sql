@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS `storage`
     `parking_id`        varchar(36) NOT NULL,
     PRIMARY KEY (`id`),
     CONSTRAINT `cid` FOREIGN KEY (`car_id`) REFERENCES `car` (`id`),
-    CONSTRAINT `psid` FOREIGN KEY (`parking_id`) REFERENCES `parking` (`id`)
+    CONSTRAINT `psid` FOREIGN KEY (`parking_id`) REFERENCES `basement` (`id`)
 );

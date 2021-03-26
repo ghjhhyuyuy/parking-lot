@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `user`
+CREATE TABLE IF NOT EXISTS `staff`
 (
     `id`                varchar(36) NOT NULL,
     `name`              varchar(36) NOT NULL,

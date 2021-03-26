@@ -18,7 +18,7 @@ import java.util.List;
 @Builder
 @Getter
 @Entity
-public class Parking {
+public class Basement {
 
     @Id
     private String id;

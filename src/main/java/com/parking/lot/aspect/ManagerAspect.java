@@ -1,10 +1,10 @@
 package com.parking.lot.aspect;
 
-import com.parking.lot.entity.User;
+import com.parking.lot.entity.Staff;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.enums.RoleType;
 import com.parking.lot.exception.NotManagerUserException;
-import com.parking.lot.repository.UserRepository;
+import com.parking.lot.repository.StaffRepository;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -15,19 +15,19 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class ManagerAspect {
 
-  private final UserRepository userRepository;
+  private final StaffRepository staffRepository;
 
   @Autowired
-  public ManagerAspect(UserRepository userRepository) {
-    this.userRepository = userRepository;
+  public ManagerAspect(StaffRepository staffRepository) {
+    this.staffRepository = staffRepository;
   }
 
-  @Before("execution(public * com.parking.lot.controller.UserController.*(..))||execution(public * com.parking.lot.controller.ParkingController.*Parking(..))")
+  @Before("execution(public * com.parking.lot.controller.StaffController.*(..))||execution(public * com.parking.lot.controller.BasementController.*Parking(..))")
   public void before(JoinPoint joinPoint) {
     String id = getParamUserId(joinPoint);
-    User user = userRepository.findById(id)
+    Staff staff = staffRepository.findById(id)
         .orElseThrow(() -> new NotManagerUserException(ExceptionMessage.NOT_FOUND_USER));
-    if (!user.getRole().equals(RoleType.MANGER.getId())) {
+    if (!staff.getRole().equals(RoleType.MANGER.getId())) {
       throw new NotManagerUserException(ExceptionMessage.NOT_MANAGER_USER);
     }
   }

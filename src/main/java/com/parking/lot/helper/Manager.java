@@ -1,19 +1,19 @@
 package com.parking.lot.helper;
 
-import com.parking.lot.entity.Parking;
+import com.parking.lot.entity.Basement;
 import com.parking.lot.util.GetParkingHelper;
 import java.util.List;
+//todo
+public class Manager extends ParkingStaff {
 
-public class Manager extends ParkingHelper {
-
-  ParkingHelper parkingHelper;
+  ParkingStaff parkingStaff;
 
   public Manager() {
-    this.parkingHelper = GetParkingHelper.randomGetParkingHelper();
+    this.parkingStaff = GetParkingHelper.randomGetParkingHelper();
   }
 
   @Override
-  public Parking parking(List<Parking> parkings) {
-    return parkingHelper.parking(parkings);
+  public Basement parking(List<Basement> basements) {
+    return parkingStaff.parking(basements);
   }
 }

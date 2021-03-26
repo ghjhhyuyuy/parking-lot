@@ -1,9 +1,6 @@
 package com.parking.lot.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -18,14 +15,11 @@ public class Storage {
     @Id
     private String id;
     private String address;
+    @Setter
     private String carId;
     private String parkingId;
 
     public void removeCarId() {
         this.carId = null;
-    }
-
-    public void parkingCar(String id) {
-        this.carId = id;
     }
 }

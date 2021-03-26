@@ -1,9 +1,9 @@
 package com.parking.lot.service;
 
-import com.parking.lot.entity.User;
+import com.parking.lot.entity.Staff;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.exception.NotFoundResourceException;
-import com.parking.lot.repository.UserRepository;
+import com.parking.lot.repository.StaffRepository;
 import com.parking.lot.util.GenerateId;
 import com.parking.lot.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,31 +13,31 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 public class UserService {
-    private final UserRepository userRepository;
+    private final StaffRepository staffRepository;
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(StaffRepository staffRepository) {
+        this.staffRepository = staffRepository;
     }
 
-    public User addUser(String name, String role) {
-        User user = new User(GenerateId.getUUID(), name, role, dateTimeFormatter.format(TimeUtil.getTime(0)),
+    public Staff addStaff(String name, String role) {
+        Staff staff = new Staff(GenerateId.getUUID(), name, role, dateTimeFormatter.format(TimeUtil.getTime(0)),
                 null);
-        return userRepository.save(user);
+        return staffRepository.save(staff);
     }
 
-    public User removeUser(String userId) {
-        User user = userRepository.findById(userId)
+    public Staff removeStaff(String userId) {
+        Staff staff = staffRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER));
-        user = remove(user);
-        return userRepository.save(user);
+        staff = remove(staff);
+        return staffRepository.save(staff);
     }
 
-    private User remove(User user) {
-        return User.builder().id(user.getId()).name(user.getName()).createDate(user.getCreateDate())
+    private Staff remove(Staff staff) {
+        return Staff.builder().id(staff.getId()).name(staff.getName()).createDate(staff.getCreateDate())
                 .role(
-                        user.getRole()).removeDate(dateTimeFormatter.format(TimeUtil.getTime(0))).build();
+                        staff.getRole()).removeDate(dateTimeFormatter.format(TimeUtil.getTime(0))).build();
     }
 }

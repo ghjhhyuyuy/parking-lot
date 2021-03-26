@@ -1,16 +1,16 @@
 package com.parking.lot.util;
 
-import com.parking.lot.helper.NormalHelper;
-import com.parking.lot.helper.ParkingHelper;
-import com.parking.lot.helper.SmartHelper;
+import com.parking.lot.helper.NormalStaff;
+import com.parking.lot.helper.ParkingStaff;
+import com.parking.lot.helper.SmartStaff;
 
 public class GetParkingHelper {
 
-  public static ParkingHelper randomGetParkingHelper() {
+  public static ParkingStaff randomGetParkingHelper() {
     if (Math.random() > 0.5) {
-      return new SmartHelper();
+      return new SmartStaff();
     } else {
-      return new NormalHelper();
+      return new NormalStaff();
     }
   }
 }

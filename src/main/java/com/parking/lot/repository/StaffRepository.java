@@ -1,10 +1,10 @@
 package com.parking.lot.repository;
 
-import com.parking.lot.entity.User;
+import com.parking.lot.entity.Staff;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, String> {
+public interface StaffRepository extends CrudRepository<Staff, String> {
 
 }

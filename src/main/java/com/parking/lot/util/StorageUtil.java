@@ -10,7 +10,7 @@ public class StorageUtil {
 
     private final Random random = new Random();
 
-
+    //todo change logic
     private String getAddress() {
         int num = random.nextInt(10);
         return String.valueOf(num);
