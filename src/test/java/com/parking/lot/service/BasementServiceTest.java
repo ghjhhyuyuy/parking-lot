@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.parking.lot.util.StorageUtil.generateStorageList;
@@ -325,10 +325,8 @@ class BasementServiceTest {
                 .createDate("2020-10-12 15:33:33").removeDate(null).role("1").build();
     }
 
-    private String getNowTime(){
-        Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return simpleDateFormat.format(date);
+    private LocalDateTime getNowTime() {
+        return LocalDateTime.now();
     }
 
     private Ticket getWrongTicket() {

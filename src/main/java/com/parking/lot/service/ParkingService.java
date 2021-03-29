@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,10 +64,8 @@ public class ParkingService {
         storage.setCarId(car.getId());
         basement.reduceNum();
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
-                .ofPattern("yyyy-MM-dd HH:mm:ss");
         Ticket ticket = new Ticket(GenerateId.getUUID(),
-                dateTimeFormatter.format(TimeUtil.getTime(0)),
+                TimeUtil.getTime(0),
                 basement.getId(),
                 storage.getId());
 
@@ -79,7 +76,6 @@ public class ParkingService {
     private void saveCarInStorage(Basement basement, Car car, Storage storage, Ticket ticket) {
         carRepository.save(car);
         storageRepository.save(storage);
-        //todo change type time
         ticketRepository.save(ticket);
         basementRepository.save(basement);
     }

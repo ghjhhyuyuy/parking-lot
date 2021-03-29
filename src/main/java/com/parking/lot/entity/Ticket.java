@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -17,7 +18,7 @@ public class Ticket {
 
   @Id
   private String id;
-  private String entryTime;
+  private LocalDateTime entryTime;
   private String parkingLotId;
   private String storageId;
 
