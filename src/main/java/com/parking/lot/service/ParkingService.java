@@ -48,14 +48,14 @@ public class ParkingService {
     public Ticket parkingCarBySelf(String parkingId, Car car)
             throws OverSizeException, NotFoundResourceException {
         Basement basement = basementRepository.findById(parkingId)
-                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING));
+                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_BASEMENT));
         ifSizeMoreThanZero(basement);
         return parkingCarInBasement(basement, car);
     }
 
     private void ifSizeMoreThanZero(Basement basement) {
         if (basement.getEmptyNumber() <= 0) {
-            throw new OverSizeException(ExceptionMessage.PARKING_OVER_SIZE);
+            throw new OverSizeException(ExceptionMessage.BASEMENT_OVER_SIZE);
         }
     }
 
@@ -72,7 +72,7 @@ public class ParkingService {
                 basement.getId(),
                 storage.getId());
 
-        saveCarInStorage(basement,car,storage,ticket);
+        saveCarInStorage(basement, car, storage, ticket);
         return ticket;
     }
 
@@ -90,52 +90,51 @@ public class ParkingService {
             throws IllegalTicketException, NotFoundResourceException {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_TICKET));
-        if (checkTicket(ticket)) {
-            return returnCarIfSameCar(ticket,carId);
-        } else {
+        if (!checkTicket(ticket)) {
             throw new IllegalTicketException(ExceptionMessage.ILLEGAL_TICKET);
         }
+        return returnCarIfSameCar(ticket, carId);
     }
 
     private Car returnCarIfSameCar(Ticket ticket, String carId) {
-        Car car = getCarByTicket(ticket);
-        if (car.getId().equals(carId)) {
-            return takeCarFromBasement(ticket, car);
+        Storage storage = storageRepository.findById(ticket.getStorageId())
+                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_STORAGE));
+        Car car = carRepository.findById(storage.getCarId())
+                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_CAR));
+        if (!car.getId().equals(carId)) {
+            throw new NotRightCarException();
         }
-        throw new NotRightCarException();
+        return takeCarFromBasement(ticket, car, storage);
     }
 
     private boolean checkTicket(Ticket ticket) {
         Basement basement = basementRepository.findById(ticket.getParkingLotId()).orElseThrow(() ->
-                new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING));
+                new NotFoundResourceException(ExceptionMessage.NOT_FOUND_BASEMENT));
         return basement.getStorageList().stream().filter(theStorage ->
                 theStorage.getId().equals(ticket.getStorageId())).count() == 1;
     }
 
     private ParkingStaff getParkingStaff(String userId) throws NotFoundResourceException {
         Staff staff = staffRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER));
-        if (staff.getRemoveDate() == null) {
-            return getParkingStaffByRoleId(staff.getRole());
+                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_STAFF));
+        if (staff.getRemoveDate() != null) {
+            throw new NotFoundResourceException(ExceptionMessage.NOT_ACTIVE_STAFF);
         }
-        throw new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER);
+        return getParkingStaffByRoleId(staff.getRole());
     }
 
     private ParkingStaff getParkingStaffByRoleId(String roleId) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new NoMatchingRoleException(ExceptionMessage.NO_MATCHING_ROLE));
-        return RoleType.valueOf(role.getRole()).getParkingHelper();
+        return RoleType.valueOf(role.getRole()).getParkingStaff();
     }
 
-    private Car takeCarFromBasement(Ticket ticket, Car car) throws NotFoundResourceException {
-        Storage storage = storageRepository.findById(ticket.getStorageId())
-                .orElseThrow(() -> new NotFoundResourceException(
-                        ExceptionMessage.NOT_FOUND_STORAGE));
+    private Car takeCarFromBasement(Ticket ticket, Car car, Storage storage) throws NotFoundResourceException {
         storage.removeCarId();
         Basement basement = basementRepository.findById(ticket.getParkingLotId())
-                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_PARKING));
+                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_BASEMENT));
         basement.increaseNum();
-        saveAfterFreeStorage(storage,basement,ticket);
+        saveAfterFreeStorage(storage, basement, ticket);
         return car;
     }
 
@@ -143,13 +142,6 @@ public class ParkingService {
         storageRepository.save(storage);
         basementRepository.save(basement);
         ticketRepository.delete(ticket);
-    }
-
-    private Car getCarByTicket(Ticket ticket) {
-        Storage storage = storageRepository.findById(ticket.getStorageId())
-                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_STORAGE));
-        return carRepository.findById(storage.getCarId())
-                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_CAR));
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -171,12 +163,12 @@ public class ParkingService {
     }
 
     private Basement createBasement(int size) {
-        if (size > 0) {
-            String id = GenerateId.getUUID();
-            List<Storage> storageList = generateStorageList(size, id);
-            return new Basement(GenerateId.getUUID(), size, storageList);
+        if (size <= 0) {
+            throw new IllegalSizeException(ExceptionMessage.ILLEGAL_SIZE);
         }
-        throw new IllegalSizeException(ExceptionMessage.ILLEGAL_SIZE);
+        String id = GenerateId.getUUID();
+        List<Storage> storageList = generateStorageList(size, id);
+        return new Basement(GenerateId.getUUID(), size, storageList);
     }
 
     @Transactional
@@ -185,14 +177,13 @@ public class ParkingService {
         basementRepository.deleteById(basementId);
     }
 
-    private void deleteRelativeStorage(String basementId) throws StillCarInParkingException {
+    private void deleteRelativeStorage(String basementId) throws StillCarInBasementException {
         List<Storage> storageList = storageRepository.findByParkingId(basementId);
         for (Storage storage : storageList) {
-            if (storage.getCarId() == null) {
-                storageRepository.delete(storage);
-            } else {
-                throw new StillCarInParkingException();
+            if (storage.getCarId() != null) {
+                throw new StillCarInBasementException();
             }
+            storageRepository.delete(storage);
         }
     }
 }

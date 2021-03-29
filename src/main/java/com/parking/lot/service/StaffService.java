@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 import java.time.format.DateTimeFormatter;
 
 @Service
-public class UserService {
+public class StaffService {
     private final StaffRepository staffRepository;
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
-    public UserService(StaffRepository staffRepository) {
+    public StaffService(StaffRepository staffRepository) {
         this.staffRepository = staffRepository;
     }
 
@@ -30,7 +30,7 @@ public class UserService {
 
     public Staff removeStaff(String userId) {
         Staff staff = staffRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_USER));
+                .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_STAFF));
         staff = remove(staff);
         return staffRepository.save(staff);
     }

@@ -51,8 +51,7 @@ class BasementServiceTest {
             //given
             Car car = getCar();
             Basement basement = getParking();
-            List<Basement> basements = Collections.singletonList(basement);
-            int parkingEmptyNum = getStorageListSizeInFirstParking(basements);
+            int parkingEmptyNum = basement.getEmptyNumber();
 
             //when
             when(basementRepository.findById(basement.getId())).thenReturn(Optional.of(basement));
@@ -60,7 +59,7 @@ class BasementServiceTest {
 
             //then
             assertNotNull(returnTicket);
-            assertEquals(parkingEmptyNum - 1, getStorageListSizeInFirstParking(basements));
+            assertEquals(parkingEmptyNum - 1, basement.getEmptyNumber());
         }
 
         @Test
@@ -70,7 +69,7 @@ class BasementServiceTest {
             assertThrows(
                     NotFoundResourceException.class,
                     () -> parkingService.parkingCarBySelf("123", car),
-                    ExceptionMessage.NOT_FOUND_PARKING.getMessage());
+                    ExceptionMessage.NOT_FOUND_BASEMENT.getMessage());
         }
 
         @Test
@@ -94,14 +93,15 @@ class BasementServiceTest {
             Basement basement = getParking();
             Car car = getCar();
             Storage storage = getStorage();
-            List<Basement> basements = Collections.singletonList(basement);
-            int parkingEmptyNum = getStorageListSizeInFirstParking(basements);
+            int parkingEmptyNum = basement.getEmptyNumber();
+
             when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
             when(basementRepository.findById("123")).thenReturn(Optional.of(basement));
             when(storageRepository.findById("1")).thenReturn(Optional.of(storage));
             when(carRepository.findById("test")).thenReturn(Optional.of(car));
             parkingService.takeCar("123", "test");
-            assertEquals(parkingEmptyNum + 1, getStorageListSizeInFirstParking(basements));
+
+            assertEquals(parkingEmptyNum + 1, basement.getEmptyNumber());
         }
 
 
@@ -119,10 +119,12 @@ class BasementServiceTest {
             Ticket ticket = getRightTicket();
             Basement basement = getParking();
             Storage storage = getStorage();
+
             when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
             when(basementRepository.findById("123")).thenReturn(Optional.of(basement));
             when(storageRepository.findById("1")).thenReturn(Optional.of(storage));
             when(carRepository.findById("test")).thenReturn(Optional.empty());
+
             assertThrows(
                     NotFoundResourceException.class,
                     () -> parkingService.takeCar("123", "test"),
@@ -150,7 +152,7 @@ class BasementServiceTest {
             Storage storage = getWrongStorage();
             when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
             when(basementRepository.findById("123")).thenReturn(Optional.of(basement));
-            when(storageRepository.findById("2")).thenReturn(Optional.of(storage));
+            when(storageRepository.findById("300")).thenReturn(Optional.of(storage));
             assertThrows(
                     IllegalTicketException.class,
                     () -> parkingService.takeCar("123", "test"));
@@ -176,46 +178,52 @@ class BasementServiceTest {
     @DisplayName("Staff Parking Car")
     class StaffBasementCarCases {
         @Test
-        void should_reduce_first_parking_when_given_normal_helper_and_first_not_empty() {
+        void should_reduce_first_basement_when_given_normal_helper_and_first_not_empty() {
             Staff normalHelper = getNormalUser();
             Car car = getCar();
             List<Basement> basementList = getParkingListWithLargeParkingInLast();
             int initNumber = getStorageListSizeInFirstParking(basementList);
             Role role = getNormalRole();
+
             when(basementRepository.findAll()).thenReturn(basementList);
             when(staffRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
+
             assertNotNull(returnTicket);
             assertEquals(initNumber - 1, getStorageListSizeInFirstParking(basementList));
         }
 
         @Test
-        void should_reduce_second_parking_when_given_normal_helper_and_first_is_empty() {
+        void should_reduce_second_basement_when_given_normal_helper_and_first_is_empty() {
             Staff normalHelper = getNormalUser();
             Car car = getCar();
             Role role = getNormalRole();
             List<Basement> emptyFistBasementList = getParkingListWithFirstFull();
             int initNumber = getStorageListSizeInSecondParking(emptyFistBasementList);
+
             when(basementRepository.findAll()).thenReturn(emptyFistBasementList);
             when(staffRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
+
             assertNotNull(returnTicket);
             assertEquals(initNumber - 1, getStorageListSizeInSecondParking(emptyFistBasementList));
         }
 
         @Test
-        void should_reduce_max_empty_parking_when_given_smart_helper() {
+        void should_reduce_max_empty_basement_when_given_smart_helper() {
             Staff smartHelper = getSmartUser();
             Car car = getCar();
             Role role = getSmartRole();
             List<Basement> basementList = getParkingListWithLargeParkingInLast();
             int initNumber = getStorageListSizeInLastParking(basementList);
+
             when(basementRepository.findAll()).thenReturn(basementList);
             when(staffRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
+
             assertNotNull(returnTicket);
             assertEquals(initNumber - 1, getStorageListSizeInLastParking(basementList));
         }
@@ -226,15 +234,17 @@ class BasementServiceTest {
             Car car = getCar();
             Role role = getManagerRole();
             List<Basement> basementList = getParkingListWithLargeParkingInLast();
+
             when(basementRepository.findAll()).thenReturn(basementList);
             when(staffRepository.findById(anyString())).thenReturn(Optional.of(manager));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
+
             assertNotNull(returnTicket);
         }
 
         @Test
-        void should_throw_outOfSetException_when_given_full_parkings_with_smart_helper() {
+        void should_throw_outOfSetException_when_given_full_basements_with_smart_helper() {
             Staff smartHelper = getSmartUser();
             Car car = getCar();
             Role role = getSmartRole();
@@ -247,7 +257,7 @@ class BasementServiceTest {
         }
 
         @Test
-        void should_throw_outOfSetException_when_given_full_parkings_with_normal_helper() {
+        void should_throw_outOfSetException_when_given_full_basements_with_normal_helper() {
             Staff normalHelper = getNormalUser();
             Car car = getCar();
             Role role = getNormalRole();
@@ -273,11 +283,11 @@ class BasementServiceTest {
     }
 
     private Role getNormalRole() {
-        return Role.builder().id("1").role("NORMAL_HELPER").build();
+        return Role.builder().id("1").role("NORMAL_STAFF").build();
     }
 
     private Role getSmartRole() {
-        return Role.builder().id("2").role("SMART_HELPER").build();
+        return Role.builder().id("2").role("SMART_STAFF").build();
     }
 
     private Role getManagerRole() {
@@ -326,7 +336,7 @@ class BasementServiceTest {
                 .id(UUID.randomUUID().toString())
                 .parkingLotId("123")
                 .entryTime(getNowTime())
-                .storageId("2")
+                .storageId("300")
                 .build();
     }
 

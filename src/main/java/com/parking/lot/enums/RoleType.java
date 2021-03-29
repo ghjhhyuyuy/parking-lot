@@ -17,7 +17,7 @@ public enum RoleType {
     this.id = id;
   }
 
-  public ParkingStaff getParkingHelper() {
+  public ParkingStaff getParkingStaff() {
     return this.parkingStaff;
   }
 

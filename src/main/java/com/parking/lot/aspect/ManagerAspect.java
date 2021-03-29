@@ -3,7 +3,7 @@ package com.parking.lot.aspect;
 import com.parking.lot.entity.Staff;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.enums.RoleType;
-import com.parking.lot.exception.NotManagerUserException;
+import com.parking.lot.exception.NotManagerException;
 import com.parking.lot.repository.StaffRepository;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -26,9 +26,9 @@ public class ManagerAspect {
   public void before(JoinPoint joinPoint) {
     String id = getParamUserId(joinPoint);
     Staff staff = staffRepository.findById(id)
-        .orElseThrow(() -> new NotManagerUserException(ExceptionMessage.NOT_FOUND_USER));
+        .orElseThrow(() -> new NotManagerException(ExceptionMessage.NOT_FOUND_STAFF));
     if (!staff.getRole().equals(RoleType.MANGER.getId())) {
-      throw new NotManagerUserException(ExceptionMessage.NOT_MANAGER_USER);
+      throw new NotManagerException(ExceptionMessage.NOT_MANAGER);
     }
   }
 

@@ -3,7 +3,7 @@ package com.parking.lot.controller;
 import com.parking.lot.entity.Staff;
 import com.parking.lot.vo.Result;
 import com.parking.lot.exception.NotFoundResourceException;
-import com.parking.lot.service.UserService;
+import com.parking.lot.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,25 +11,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/staff")
 public class StaffController {
 
-    private final UserService userService;
+    private final StaffService staffService;
 
     @Autowired
     public StaffController(
-            UserService userService) {
-        this.userService = userService;
+            StaffService staffService) {
+        this.staffService = staffService;
     }
 
     @PostMapping
     public Result<Staff> addStaff(String id, String name, String role)
             throws NotFoundResourceException {
-        Staff staff = userService.addStaff(name, role);
+        Staff staff = staffService.addStaff(name, role);
         return new Result<Staff>().getSuccessResult(staff);
     }
 
     @DeleteMapping("/{id}")
     public Result<Staff> deleteStaff(@PathVariable("id") String userId)
             throws NotFoundResourceException {
-        Staff staff = userService.removeStaff(userId);
+        Staff staff = staffService.removeStaff(userId);
         return new Result<Staff>().getSuccessResult(staff);
     }
 }

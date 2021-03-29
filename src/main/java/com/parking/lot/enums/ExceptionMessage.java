@@ -1,20 +1,20 @@
 package com.parking.lot.enums;
 
 public enum ExceptionMessage {
-  NOT_FOUND_PARKING("603", "not found parking"),
-  NOT_FOUND_TICKET("604", "not found ticket"),
-  NOT_FOUND_USER("606", "not found user"),
-  ILLEGAL_TICKET("601", "illegal ticket"),
-  NOT_PARKING_HELPER("605", "Not ParkingHelper"),
-  PARKING_OVER_SIZE("602", "parking over size"),
-  NO_MATCHING_ROLE("607", "no matching role"),
-  OUT_OF_SET("608", "there is no set in all parkings"),
-  ILLEGAL_SIZE("609", "illegal size"),
-  NOT_MANAGER_USER("610", "not manager user"),
-  NOT_FOUND_CAR("611", "not found car"),
-  NOT_FOUND_STORAGE("612", "not found storage"),
-  NOT_RIGHT_CAR("613", "not right car"),
-  STILL_CAR_IN_PARKING("614", "can not remove Parking because still car in Parking");
+  NOT_FOUND_BASEMENT("603", "Not found basement"),
+  NOT_FOUND_TICKET("604", "Not found ticket"),
+  NOT_FOUND_STAFF("606", "Not found staff"),
+  ILLEGAL_TICKET("601", "Illegal ticket"),
+  NOT_ACTIVE_STAFF("605", "Not active staff"),
+  BASEMENT_OVER_SIZE("602", "Basement over size"),
+  NO_MATCHING_ROLE("607", "No matching role"),
+  OUT_OF_SET("608", "There is no set in all basements"),
+  ILLEGAL_SIZE("609", "Illegal size"),
+  NOT_MANAGER("610", "Not manager"),
+  NOT_FOUND_CAR("611", "Not found car"),
+  NOT_FOUND_STORAGE("612", "Not found storage"),
+  NOT_RIGHT_CAR("613", "Not right car"),
+  STILL_CAR_IN_BASEMENT("614", "Can not remove basement because still car in basement");
   private final String code;
   private final String message;
 
