@@ -48,10 +48,14 @@ public class ParkingService {
             throws OverSizeException, NotFoundResourceException {
         Basement basement = basementRepository.findById(basementId)
                 .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_BASEMENT));
-        List<Storage> storageList = storageRepository.findByBasementId(basementId);
-        basement.setStorageList(storageList);
+        addStoragesToBasement(basement);
         ifSizeMoreThanZero(basement);
         return parkingCarInBasement(basement, car);
+    }
+
+    private void addStoragesToBasement(Basement basement) {
+        List<Storage> storageList = storageRepository.findByBasementId(basement.getId());
+        basement.setStorageList(storageList);
     }
 
     private void ifSizeMoreThanZero(Basement basement) {
@@ -146,8 +150,7 @@ public class ParkingService {
     @Retryable(backoff = @Backoff(multiplier = 1.5))
     public Ticket parkingCarByStaff(String userId, Car car) {
         Basement basement = getBasementByStaff(userId);
-        List<Storage> storageList = storageRepository.findByBasementId(basement.getId());
-        basement.setStorageList(storageList);
+        addStoragesToBasement(basement);
         return parkingCarInBasement(basement, car);
     }
 
