@@ -18,7 +18,7 @@ public class Ticket {
 
   @Id
   private String id;
-  private LocalDateTime entryTime;
+  private LocalDateTime entryDate;
   private String parkingLotId;
   private String storageId;
 

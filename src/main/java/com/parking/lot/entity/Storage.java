@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Builder
 @Getter
@@ -11,13 +12,12 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @Entity
 public class Storage {
-
     @Id
     private String id;
     private String address;
     @Setter
     private String carId;
-    private String parkingId;
+    private String basementId;
 
     public void removeCarId() {
         this.carId = null;

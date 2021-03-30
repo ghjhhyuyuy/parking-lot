@@ -22,9 +22,9 @@ public class BasementController {
     }
 
     @PostMapping("/self/parkingCar/{id}")
-    public Result<Ticket> parkingCarBySelf(@PathVariable("id") String parkingId, Car car)
+    public Result<Ticket> parkingCarBySelf(@PathVariable("id") String basementId, Car car)
             throws NotFoundResourceException {
-        Ticket ticket = parkingService.parkingCarBySelf(parkingId, car);
+        Ticket ticket = parkingService.parkingCarBySelf(basementId, car);
         return new Result<Ticket>().getSuccessResult(ticket);
     }
 
@@ -53,9 +53,9 @@ public class BasementController {
 
     @DeleteMapping("/{id}")
     public Result<Basement> deleteBasement(String id,
-                                          @PathVariable("id") String parkingId)
+                                          @PathVariable("id") String basementId)
             throws NotFoundResourceException {
-        parkingService.removeBasement(parkingId);
+        parkingService.removeBasement(basementId);
         return new Result<Basement>().getSuccessResult(null);
     }
 }

@@ -44,10 +44,12 @@ public class ParkingService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @Retryable(backoff = @Backoff(multiplier = 1.5))
-    public Ticket parkingCarBySelf(String parkingId, Car car)
+    public Ticket parkingCarBySelf(String basementId, Car car)
             throws OverSizeException, NotFoundResourceException {
-        Basement basement = basementRepository.findById(parkingId)
+        Basement basement = basementRepository.findById(basementId)
                 .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_BASEMENT));
+        List<Storage> storageList = storageRepository.findByBasementId(basementId);
+        basement.setStorageList(storageList);
         ifSizeMoreThanZero(basement);
         return parkingCarInBasement(basement, car);
     }
@@ -144,6 +146,8 @@ public class ParkingService {
     @Retryable(backoff = @Backoff(multiplier = 1.5))
     public Ticket parkingCarByStaff(String userId, Car car) {
         Basement basement = getBasementByStaff(userId);
+        List<Storage> storageList = storageRepository.findByBasementId(basement.getId());
+        basement.setStorageList(storageList);
         return parkingCarInBasement(basement, car);
     }
 
@@ -154,17 +158,22 @@ public class ParkingService {
     }
 
     public Basement addBasement(int size) {
-        Basement basement = createBasement(size);
-        return basementRepository.save(basement);
-    }
-
-    private Basement createBasement(int size) {
         if (size <= 0) {
             throw new IllegalSizeException(ExceptionMessage.ILLEGAL_SIZE);
         }
         String id = GenerateId.getUUID();
         List<Storage> storageList = generateStorageList(size, id);
-        return new Basement(GenerateId.getUUID(), size, storageList);
+        Basement basement = new Basement(id, size, storageList);
+        basementRepository.save(basement);
+        saveStorages(storageList);
+        return basement;
+    }
+
+
+    private void saveStorages(List<Storage> storageList) {
+        for (Storage storage : storageList) {
+            storageRepository.save(storage);
+        }
     }
 
     @Transactional
@@ -174,7 +183,7 @@ public class ParkingService {
     }
 
     private void deleteRelativeStorage(String basementId) throws StillCarInBasementException {
-        List<Storage> storageList = storageRepository.findByParkingId(basementId);
+        List<Storage> storageList = storageRepository.findByBasementId(basementId);
         for (Storage storage : storageList) {
             if (storage.getCarId() != null) {
                 throw new StillCarInBasementException();
