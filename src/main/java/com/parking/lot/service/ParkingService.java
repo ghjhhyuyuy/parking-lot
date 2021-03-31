@@ -4,8 +4,8 @@ import com.parking.lot.entity.*;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.enums.RoleType;
 import com.parking.lot.exception.*;
-import com.parking.lot.staff.ParkingStaff;
 import com.parking.lot.repository.*;
+import com.parking.lot.staff.ParkingStaff;
 import com.parking.lot.util.GenerateId;
 import com.parking.lot.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.parking.lot.util.StorageUtil.generateStorageList;
 
@@ -49,24 +48,18 @@ public class ParkingService {
         Basement basement = basementRepository.findById(basementId)
                 .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_BASEMENT));
         addStoragesToBasement(basement);
-        ifSizeMoreThanZero(basement);
         return parkingCarInBasement(basement, car);
     }
-
+    //todo check
     private void addStoragesToBasement(Basement basement) {
         List<Storage> storageList = storageRepository.findByBasementId(basement.getId());
         basement.setStorageList(storageList);
     }
 
-    private void ifSizeMoreThanZero(Basement basement) {
-        if (basement.getEmptyNumber() <= 0) {
-            throw new OverSizeException(ExceptionMessage.BASEMENT_OVER_SIZE);
-        }
-    }
-
     private Ticket parkingCarInBasement(Basement basement, Car car) {
         Storage storage = basement.getStorageList().stream()
-                .filter(theStorage -> theStorage.getCarId() == null).collect(Collectors.toList()).get(0);
+                .filter(theStorage -> theStorage.getCarId() == null)
+                .findFirst().orElseThrow(()->new OverSizeException(ExceptionMessage.BASEMENT_OVER_SIZE));
         storage.setCarId(car.getId());
         basement.reduceNum();
 
@@ -110,10 +103,10 @@ public class ParkingService {
     }
 
     private boolean checkTicket(Ticket ticket) {
-        Basement basement = basementRepository.findById(ticket.getParkingLotId()).orElseThrow(() ->
-                new NotFoundResourceException(ExceptionMessage.NOT_FOUND_BASEMENT));
-        return basement.getStorageList().stream().filter(theStorage ->
-                theStorage.getId().equals(ticket.getStorageId())).count() == 1;
+        //todo storage ->basementId
+        Storage storage = storageRepository.findById(ticket.getStorageId()).orElseThrow(() ->
+                new NotFoundResourceException(ExceptionMessage.NOT_FOUND_STORAGE));
+        return storage.getBasementId().equals(ticket.getParkingLotId());
     }
 
     private ParkingStaff getParkingStaff(String userId) throws NotFoundResourceException {
@@ -125,6 +118,7 @@ public class ParkingService {
         return getParkingStaffByRoleId(staff.getRole());
     }
 
+    //todo RoleType new object
     private ParkingStaff getParkingStaffByRoleId(String roleId) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new NoMatchingRoleException(ExceptionMessage.NO_MATCHING_ROLE));
@@ -133,6 +127,7 @@ public class ParkingService {
 
     private Car takeCarFromBasement(Ticket ticket, Car car, Storage storage) throws NotFoundResourceException {
         storage.removeCarId();
+        //todo lazy
         Basement basement = basementRepository.findById(ticket.getParkingLotId())
                 .orElseThrow(() -> new NotFoundResourceException(ExceptionMessage.NOT_FOUND_BASEMENT));
         basement.increaseNum();
@@ -167,6 +162,7 @@ public class ParkingService {
         String id = GenerateId.getUUID();
         List<Storage> storageList = generateStorageList(size, id);
         Basement basement = new Basement(id, size, storageList);
+        //todo
         basementRepository.save(basement);
         saveStorages(storageList);
         return basement;

@@ -22,7 +22,7 @@ public class ManagerAspect {
     this.staffRepository = staffRepository;
   }
 
-  @Before("execution(public * com.parking.lot.controller.StaffController.*(..))||execution(public * com.parking.lot.controller.BasementController.*Parking(..))")
+  @Before("execution(public * com.parking.lot.controller.StaffController.*(..))||execution(public * com.parking.lot.controller.BasementController.*Basement(..))")
   public void before(JoinPoint joinPoint) {
     String id = getParamUserId(joinPoint);
     Staff staff = staffRepository.findById(id)
