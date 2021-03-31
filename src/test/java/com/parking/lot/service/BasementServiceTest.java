@@ -52,11 +52,9 @@ class BasementServiceTest {
             Car car = getCar();
             Basement basement = getParking();
             int parkingEmptyNum = basement.getEmptyNumber();
-            List<Storage> storageList = basement.getStorageList();
 
             //when
             when(basementRepository.findById(basement.getId())).thenReturn(Optional.of(basement));
-            when(storageRepository.findByBasementId("42f408b2-3ee6-48fd-8159-b49789f7096b")).thenReturn(storageList);
             Ticket returnTicket = parkingService.parkingCarBySelf(basement.getId(), car);
 
             //then
@@ -94,11 +92,11 @@ class BasementServiceTest {
             Ticket ticket = getRightTicket();
             Basement basement = getParking();
             Car car = getCar();
-            Storage storage = getStorage();
+            Storage storage = getStorage(basement.getId());
             int parkingEmptyNum = basement.getEmptyNumber();
 
             when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
-            when(basementRepository.findById("123")).thenReturn(Optional.of(basement));
+            when(basementRepository.findById("42f408b2-3ee6-48fd-8159-b49789f7096b")).thenReturn(Optional.of(basement));
             when(storageRepository.findById("1")).thenReturn(Optional.of(storage));
             when(carRepository.findById("test")).thenReturn(Optional.of(car));
             parkingService.takeCar("123", "test");
@@ -120,7 +118,7 @@ class BasementServiceTest {
         void should_throw_notFoundResourceException_when_not_found_storage() {
             Ticket ticket = getRightTicket();
             Basement basement = getParking();
-            Storage storage = getStorage();
+            Storage storage = getStorage(basement.getId());
 
             when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
             when(basementRepository.findById("123")).thenReturn(Optional.of(basement));
@@ -151,7 +149,7 @@ class BasementServiceTest {
         void should_throw_illegalTicketException_when_not_right_ticket() {
             Ticket ticket = getWrongTicket();
             Basement basement = getParking();
-            Storage storage = getWrongStorage();
+            Storage storage = getWrongStorage(basement.getId());
             when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
             when(basementRepository.findById("123")).thenReturn(Optional.of(basement));
             when(storageRepository.findById("300")).thenReturn(Optional.of(storage));
@@ -165,7 +163,7 @@ class BasementServiceTest {
             Ticket ticket = getRightTicket();
             Basement basement = getParking();
             Car car = getCar();
-            Storage storage = getStorage();
+            Storage storage = getStorage(basement.getId());
             when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
             when(basementRepository.findById("123")).thenReturn(Optional.of(basement));
             when(storageRepository.findById("1")).thenReturn(Optional.of(storage));
@@ -184,14 +182,12 @@ class BasementServiceTest {
             Staff normalStaff = getNormalUser();
             Car car = getCar();
             List<Basement> basementList = getParkingListWithLargeParkingInLast();
-            List<Storage> storageList = basementList.get(0).getStorageList();
             int initNumber = getStorageListSizeInFirstParking(basementList);
             Role role = getNormalRole();
 
             when(basementRepository.findAll()).thenReturn(basementList);
             when(staffRepository.findById(anyString())).thenReturn(Optional.of(normalStaff));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-            when(storageRepository.findByBasementId("42f408b2-3ee6-48fd-8159-b49789f7096b")).thenReturn(storageList);
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
 
             assertNotNull(returnTicket);
@@ -205,12 +201,10 @@ class BasementServiceTest {
             Role role = getNormalRole();
             List<Basement> emptyFistBasementList = getParkingListWithFirstFull();
             int initNumber = getStorageListSizeInSecondParking(emptyFistBasementList);
-            List<Storage> storageList = emptyFistBasementList.get(1).getStorageList();
 
             when(basementRepository.findAll()).thenReturn(emptyFistBasementList);
             when(staffRepository.findById(anyString())).thenReturn(Optional.of(normalStaff));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-            when(storageRepository.findByBasementId("42f408b2-3ee6-48fd-8159-b49789f7096b")).thenReturn(storageList);
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
 
             assertNotNull(returnTicket);
@@ -224,12 +218,10 @@ class BasementServiceTest {
             Role role = getSmartRole();
             List<Basement> basementList = getParkingListWithLargeParkingInLast();
             int initNumber = getStorageListSizeInLastParking(basementList);
-            List<Storage> storageList = basementList.get(basementList.size()-1).getStorageList();
 
             when(basementRepository.findAll()).thenReturn(basementList);
             when(staffRepository.findById(anyString())).thenReturn(Optional.of(smartStaff));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-            when(storageRepository.findByBasementId("42f408b2-3ee6-48fd-8159-b49789f7096d")).thenReturn(storageList);
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
 
             assertNotNull(returnTicket);
@@ -242,12 +234,10 @@ class BasementServiceTest {
             Car car = getCar();
             Role role = getManagerRole();
             List<Basement> basementList = getParkingListWithLargeParkingInLast();
-            List<Storage> storageList = basementList.get(0).getStorageList();
 
             when(basementRepository.findAll()).thenReturn(basementList);
             when(staffRepository.findById(anyString())).thenReturn(Optional.of(manager));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
-            when(storageRepository.findByBasementId(anyString())).thenReturn(storageList);
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
 
             assertNotNull(returnTicket);
@@ -304,16 +294,16 @@ class BasementServiceTest {
         return Role.builder().role("3").role("MANGER").build();
     }
 
-    private Storage getStorage() {
-        return Storage.builder().carId("test").address("3").id("1").build();
+    private Storage getStorage(String basementId) {
+        return Storage.builder().carId("test").address("3").id("1").basementId(basementId).build();
     }
 
-    private Storage getEmptyStorage() {
-        return Storage.builder().address("4").id("2").build();
+    private Storage getEmptyStorage(String basementId) {
+        return Storage.builder().address("4").id("2").basementId(basementId).build();
     }
 
-    private Storage getWrongStorage() {
-        return Storage.builder().carId("test").address("3").id("B").build();
+    private Storage getWrongStorage(String basementId) {
+        return Storage.builder().carId("test").address("3").id("2").basementId(basementId+"1").build();
     }
 
     private Car getCar() {
@@ -341,8 +331,8 @@ class BasementServiceTest {
 
     private Ticket getWrongTicket() {
         return Ticket.builder()
-                .id(UUID.randomUUID().toString())
-                .parkingLotId("123")
+                .id("123")
+                .parkingLotId("42f408b2-3ee6-48fd-8159-b49789f7096b")
                 .entryDate(getNowTime())
                 .storageId("300")
                 .build();
@@ -350,8 +340,8 @@ class BasementServiceTest {
 
     private Ticket getRightTicket() {
         return Ticket.builder()
-                .id(UUID.randomUUID().toString())
-                .parkingLotId("123")
+                .id("123")
+                .parkingLotId("42f408b2-3ee6-48fd-8159-b49789f7096b")
                 .entryDate(getNowTime())
                 .storageId("1")
                 .build();
@@ -391,12 +381,13 @@ class BasementServiceTest {
     }
 
     private Basement getParking() {
-        Storage storage = getStorage();
-        Storage emptyStorage = getEmptyStorage();
+        String id = "42f408b2-3ee6-48fd-8159-b49789f7096b";
+        Storage storage = getStorage(id);
+        Storage emptyStorage = getEmptyStorage(id);
         List<Storage> storageList = new ArrayList<>();
         storageList.add(storage);
         storageList.add(emptyStorage);
-        return Basement.builder().id("42f408b2-3ee6-48fd-8159-b49789f7096b").emptyNumber(1)
+        return Basement.builder().id(id).emptyNumber(1)
                 .storageList(storageList).build();
     }
 }

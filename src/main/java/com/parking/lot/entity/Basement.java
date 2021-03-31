@@ -3,11 +3,9 @@ package com.parking.lot.entity;
 import lombok.*;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.springframework.context.annotation.Lazy;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,9 +19,8 @@ public class Basement {
     @Id
     private String id;
     private int emptyNumber;
-    @OneToMany(mappedBy = "basementId", cascade = {CascadeType.MERGE})
+    @OneToMany(mappedBy = "basementId", cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
     @NotFound(action = NotFoundAction.IGNORE)
-    @Setter
     private List<Storage> storageList;
 
     public void increaseNum() {
