@@ -180,8 +180,8 @@ class BasementServiceTest {
     @DisplayName("Staff Parking Car")
     class StaffBasementCarCases {
         @Test
-        void should_reduce_first_basement_when_given_normal_helper_and_first_not_empty() {
-            Staff normalHelper = getNormalUser();
+        void should_reduce_first_basement_when_given_normal_staff_and_first_not_empty() {
+            Staff normalStaff = getNormalUser();
             Car car = getCar();
             List<Basement> basementList = getParkingListWithLargeParkingInLast();
             List<Storage> storageList = basementList.get(0).getStorageList();
@@ -189,7 +189,7 @@ class BasementServiceTest {
             Role role = getNormalRole();
 
             when(basementRepository.findAll()).thenReturn(basementList);
-            when(staffRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
+            when(staffRepository.findById(anyString())).thenReturn(Optional.of(normalStaff));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
             when(storageRepository.findByBasementId("42f408b2-3ee6-48fd-8159-b49789f7096b")).thenReturn(storageList);
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
@@ -199,8 +199,8 @@ class BasementServiceTest {
         }
 
         @Test
-        void should_reduce_second_basement_when_given_normal_helper_and_first_is_empty() {
-            Staff normalHelper = getNormalUser();
+        void should_reduce_second_basement_when_given_normal_staff_and_first_is_empty() {
+            Staff normalStaff = getNormalUser();
             Car car = getCar();
             Role role = getNormalRole();
             List<Basement> emptyFistBasementList = getParkingListWithFirstFull();
@@ -208,7 +208,7 @@ class BasementServiceTest {
             List<Storage> storageList = emptyFistBasementList.get(1).getStorageList();
 
             when(basementRepository.findAll()).thenReturn(emptyFistBasementList);
-            when(staffRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
+            when(staffRepository.findById(anyString())).thenReturn(Optional.of(normalStaff));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
             when(storageRepository.findByBasementId("42f408b2-3ee6-48fd-8159-b49789f7096b")).thenReturn(storageList);
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
@@ -218,8 +218,8 @@ class BasementServiceTest {
         }
 
         @Test
-        void should_reduce_max_empty_basement_when_given_smart_helper() {
-            Staff smartHelper = getSmartUser();
+        void should_reduce_max_empty_basement_when_given_smart_staff() {
+            Staff smartStaff = getSmartUser();
             Car car = getCar();
             Role role = getSmartRole();
             List<Basement> basementList = getParkingListWithLargeParkingInLast();
@@ -227,7 +227,7 @@ class BasementServiceTest {
             List<Storage> storageList = basementList.get(basementList.size()-1).getStorageList();
 
             when(basementRepository.findAll()).thenReturn(basementList);
-            when(staffRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
+            when(staffRepository.findById(anyString())).thenReturn(Optional.of(smartStaff));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
             when(storageRepository.findByBasementId("42f408b2-3ee6-48fd-8159-b49789f7096d")).thenReturn(storageList);
             Ticket returnTicket = parkingService.parkingCarByStaff(anyString(), car);
@@ -254,26 +254,26 @@ class BasementServiceTest {
         }
 
         @Test
-        void should_throw_outOfSetException_when_given_full_basements_with_smart_helper() {
-            Staff smartHelper = getSmartUser();
+        void should_throw_outOfSetException_when_given_full_basements_with_smart_staff() {
+            Staff smartStaff = getSmartUser();
             Car car = getCar();
             Role role = getSmartRole();
             List<Basement> basementList = getFullParkingList();
             when(basementRepository.findAll()).thenReturn(basementList);
-            when(staffRepository.findById(anyString())).thenReturn(Optional.of(smartHelper));
+            when(staffRepository.findById(anyString())).thenReturn(Optional.of(smartStaff));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
             assertThrows(OutOfSetException.class,
                     () -> parkingService.parkingCarByStaff(anyString(), car));
         }
 
         @Test
-        void should_throw_outOfSetException_when_given_full_basements_with_normal_helper() {
-            Staff normalHelper = getNormalUser();
+        void should_throw_outOfSetException_when_given_full_basements_with_normal_staff() {
+            Staff normalStaff = getNormalUser();
             Car car = getCar();
             Role role = getNormalRole();
             List<Basement> basementList = getFullParkingList();
             when(basementRepository.findAll()).thenReturn(basementList);
-            when(staffRepository.findById(anyString())).thenReturn(Optional.of(normalHelper));
+            when(staffRepository.findById(anyString())).thenReturn(Optional.of(normalStaff));
             when(roleRepository.findById(anyString())).thenReturn(Optional.of(role));
             assertThrows(OutOfSetException.class,
                     () -> parkingService.parkingCarByStaff(anyString(), car));

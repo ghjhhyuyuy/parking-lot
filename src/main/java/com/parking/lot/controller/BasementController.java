@@ -1,11 +1,11 @@
 package com.parking.lot.controller;
 
-import com.parking.lot.entity.Car;
 import com.parking.lot.entity.Basement;
+import com.parking.lot.entity.Car;
 import com.parking.lot.entity.Ticket;
-import com.parking.lot.vo.Result;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.service.ParkingService;
+import com.parking.lot.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,7 +53,7 @@ public class BasementController {
 
     @DeleteMapping("/{id}")
     public Result<Basement> deleteBasement(String id,
-                                          @PathVariable("id") String basementId)
+                                           @PathVariable("id") String basementId)
             throws NotFoundResourceException {
         parkingService.removeBasement(basementId);
         return new Result<Basement>().getSuccessResult(null);

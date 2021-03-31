@@ -4,7 +4,7 @@ import com.parking.lot.entity.*;
 import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.enums.RoleType;
 import com.parking.lot.exception.*;
-import com.parking.lot.helper.ParkingStaff;
+import com.parking.lot.staff.ParkingStaff;
 import com.parking.lot.repository.*;
 import com.parking.lot.util.GenerateId;
 import com.parking.lot.util.TimeUtil;

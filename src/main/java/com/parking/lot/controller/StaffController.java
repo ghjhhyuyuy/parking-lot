@@ -1,9 +1,9 @@
 package com.parking.lot.controller;
 
 import com.parking.lot.entity.Staff;
-import com.parking.lot.vo.Result;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.service.StaffService;
+import com.parking.lot.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +27,7 @@ public class StaffController {
     }
 
     @DeleteMapping("/{id}")
-    public Result<Staff> deleteStaff(@PathVariable("id") String userId)
+    public Result<Staff> deleteStaff(String id, @PathVariable("id") String userId)
             throws NotFoundResourceException {
         Staff staff = staffService.removeStaff(userId);
         return new Result<Staff>().getSuccessResult(staff);

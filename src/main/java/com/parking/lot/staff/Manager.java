@@ -1,7 +1,7 @@
-package com.parking.lot.helper;
+package com.parking.lot.staff;
 
 import com.parking.lot.entity.Basement;
-import com.parking.lot.util.GetParkingHelper;
+import com.parking.lot.util.GetParkingStaff;
 import java.util.List;
 
 public class Manager extends ParkingStaff {
@@ -9,7 +9,7 @@ public class Manager extends ParkingStaff {
   ParkingStaff parkingStaff;
 
   public Manager() {
-    this.parkingStaff = GetParkingHelper.randomGetParkingHelper();
+    this.parkingStaff = GetParkingStaff.randomGetParkingStaff();
   }
 
   @Override

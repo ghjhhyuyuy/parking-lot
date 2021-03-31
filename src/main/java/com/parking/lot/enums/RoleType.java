@@ -1,9 +1,9 @@
 package com.parking.lot.enums;
 
-import com.parking.lot.helper.Manager;
-import com.parking.lot.helper.NormalStaff;
-import com.parking.lot.helper.ParkingStaff;
-import com.parking.lot.helper.SmartStaff;
+import com.parking.lot.staff.Manager;
+import com.parking.lot.staff.NormalStaff;
+import com.parking.lot.staff.ParkingStaff;
+import com.parking.lot.staff.SmartStaff;
 
 public enum RoleType {
   NORMAL_STAFF(new NormalStaff(),"1"),
