@@ -1,5 +1,6 @@
 package com.parking.lot.controller;
 
+import com.parking.lot.annotation.ManagerCheck;
 import com.parking.lot.entity.Staff;
 import com.parking.lot.exception.NotFoundResourceException;
 import com.parking.lot.request.AddStaffRequest;
@@ -21,6 +22,7 @@ public class StaffController {
     }
 
     @PostMapping
+    @ManagerCheck
     public Result<Staff> addStaff(@RequestBody AddStaffRequest addStaffRequest)
             throws NotFoundResourceException {
         Staff staff = staffService.addStaff(addStaffRequest.getName(), addStaffRequest.getRole());
@@ -28,6 +30,7 @@ public class StaffController {
     }
 
     @DeleteMapping("/{id}")
+    @ManagerCheck
     public Result<Staff> deleteStaff(String id, @PathVariable("id") String userId)
             throws NotFoundResourceException {
         Staff staff = staffService.removeStaff(userId);

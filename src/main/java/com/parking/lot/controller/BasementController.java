@@ -1,5 +1,6 @@
 package com.parking.lot.controller;
 
+import com.parking.lot.annotation.ManagerCheck;
 import com.parking.lot.entity.Basement;
 import com.parking.lot.entity.Car;
 import com.parking.lot.entity.Ticket;
@@ -45,6 +46,7 @@ public class BasementController {
     }
 
     @PostMapping
+    @ManagerCheck
     public Result<Basement> addBasement(@RequestBody AddBasementRequest addBasementRequest)
             throws NotFoundResourceException {
         Basement basement = parkingService.addBasement(addBasementRequest.getSize());
@@ -53,6 +55,7 @@ public class BasementController {
 
 
     @DeleteMapping("/{id}")
+    @ManagerCheck
     public Result<Basement> deleteBasement(String id,
                                            @PathVariable("id") String basementId)
             throws NotFoundResourceException {
