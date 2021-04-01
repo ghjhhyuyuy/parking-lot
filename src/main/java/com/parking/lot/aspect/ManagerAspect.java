@@ -5,6 +5,7 @@ import com.parking.lot.enums.ExceptionMessage;
 import com.parking.lot.enums.RoleType;
 import com.parking.lot.exception.NotManagerException;
 import com.parking.lot.repository.StaffRepository;
+import com.parking.lot.request.Request;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -34,6 +35,7 @@ public class ManagerAspect {
 
   private String getParamUserId(JoinPoint joinPoint) {
     Object[] objects = joinPoint.getArgs();
-    return (String) objects[0];
+    Request request = (Request) objects[0];
+    return request.getId();
   }
 }

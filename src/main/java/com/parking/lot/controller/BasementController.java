@@ -4,6 +4,7 @@ import com.parking.lot.entity.Basement;
 import com.parking.lot.entity.Car;
 import com.parking.lot.entity.Ticket;
 import com.parking.lot.exception.NotFoundResourceException;
+import com.parking.lot.request.AddBasementRequest;
 import com.parking.lot.service.ParkingService;
 import com.parking.lot.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class BasementController {
     }
 
     @PostMapping("/self/parkingCar/{id}")
-    public Result<Ticket> parkingCarBySelf(@PathVariable("id") String basementId, Car car)
+    public Result<Ticket> parkingCarBySelf(@PathVariable("id") String basementId, @RequestBody Car car)
             throws NotFoundResourceException {
         Ticket ticket = parkingService.parkingCarBySelf(basementId, car);
         return new Result<Ticket>().getSuccessResult(ticket);
@@ -30,7 +31,7 @@ public class BasementController {
 
     @PostMapping("/staff/parkingCar/{id}")
     public Result<Ticket> parkingCarByStaff(@PathVariable("id") String userId,
-                                            Car car)
+                                            @RequestBody Car car)
             throws NotFoundResourceException {
         Ticket ticket = parkingService.parkingCarByStaff(userId, car);
         return new Result<Ticket>().getSuccessResult(ticket);
@@ -44,9 +45,9 @@ public class BasementController {
     }
 
     @PostMapping
-    public Result<Basement> addBasement(String id, int size)
+    public Result<Basement> addBasement(@RequestBody AddBasementRequest addBasementRequest)
             throws NotFoundResourceException {
-        Basement basement = parkingService.addBasement(size);
+        Basement basement = parkingService.addBasement(addBasementRequest.getSize());
         return new Result<Basement>().getSuccessResult(basement);
     }
 

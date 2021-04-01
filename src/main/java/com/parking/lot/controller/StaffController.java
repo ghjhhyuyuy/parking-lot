@@ -2,6 +2,7 @@ package com.parking.lot.controller;
 
 import com.parking.lot.entity.Staff;
 import com.parking.lot.exception.NotFoundResourceException;
+import com.parking.lot.request.AddStaffRequest;
 import com.parking.lot.service.StaffService;
 import com.parking.lot.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,9 @@ public class StaffController {
     }
 
     @PostMapping
-    public Result<Staff> addStaff(String id, String name, String role)
+    public Result<Staff> addStaff(@RequestBody AddStaffRequest addStaffRequest)
             throws NotFoundResourceException {
-        Staff staff = staffService.addStaff(name, role);
+        Staff staff = staffService.addStaff(addStaffRequest.getName(), addStaffRequest.getRole());
         return new Result<Staff>().getSuccessResult(staff);
     }
 
