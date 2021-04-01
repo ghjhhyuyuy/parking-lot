@@ -111,7 +111,7 @@ public class ParkingService {
         return getParkingStaffByRoleId(staff.getRole());
     }
 
-    //todo RoleType new object
+    //todo RoleType new object？会不会有点奇怪
     private ParkingStaff getParkingStaffByRoleId(String roleId) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new NoMatchingRoleException(ExceptionMessage.NO_MATCHING_ROLE));
