@@ -20,7 +20,7 @@ import java.util.List;
 import static com.parking.lot.util.StorageUtil.generateStorageList;
 
 @Service
-public class ParkingService {
+public class BasementService {
 
     private final BasementRepository basementRepository;
     private final TicketRepository ticketRepository;
@@ -30,9 +30,9 @@ public class ParkingService {
     private final StorageRepository storageRepository;
 
     @Autowired
-    public ParkingService(BasementRepository basementRepository, TicketRepository ticketRepository,
-                          StaffRepository staffRepository, RoleRepository roleRepository, CarRepository carRepository,
-                          StorageRepository storageRepository) {
+    public BasementService(BasementRepository basementRepository, TicketRepository ticketRepository,
+                           StaffRepository staffRepository, RoleRepository roleRepository, CarRepository carRepository,
+                           StorageRepository storageRepository) {
         this.basementRepository = basementRepository;
         this.ticketRepository = ticketRepository;
         this.staffRepository = staffRepository;

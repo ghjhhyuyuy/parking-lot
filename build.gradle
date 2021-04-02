@@ -20,6 +20,8 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.75'
+    implementation 'junit:junit:4.12'
     testImplementation group: 'org.jacoco', name: 'org.jacoco.agent', version: '0.8.6'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -62,7 +64,7 @@ jacocoTestReport {
         getClassDirectories().setFrom(
                 classDirectories.files.collect {
                     fileTree(dir: it,
-                            exclude: ['需要排除的路径, it路径是classes'])
+                            includes: ['com/parking/lot/controller/**','com/parking/lot/service/**','com/parking/lot/util/**'])
                 }
         )
     }
