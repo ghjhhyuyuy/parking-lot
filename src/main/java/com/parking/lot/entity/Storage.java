@@ -17,7 +17,6 @@ public class Storage {
     private String address;
     @Setter
     private String carId;
-    @Setter
     private String basementId;
 
     public void removeCarId() {

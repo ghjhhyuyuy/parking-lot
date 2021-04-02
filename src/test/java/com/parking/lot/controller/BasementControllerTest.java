@@ -41,7 +41,8 @@ class BasementControllerTest {
     public void addBasementTest() throws Exception {
         String managerId = "b1e1946e-101c-403a-92fa-859081905dcf";
         String staff = "{\"id\":\"" + managerId + "\",\"size\":10}";
-        String result = mockMvc.perform(post("/basement").content(staff).contentType(MediaType.APPLICATION_JSON))
+        String result = mockMvc.perform(post("/basement").content(staff)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code", is("200")))
                 .andExpect(jsonPath("$.data.emptyNumber", is(10)))
                 .andExpect(status().isOk())

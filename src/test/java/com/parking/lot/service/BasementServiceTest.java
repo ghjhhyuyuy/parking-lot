@@ -137,11 +137,11 @@ class BasementServiceTest {
             when(ticketRepository.findById("123")).thenReturn(Optional.of(ticket));
             when(basementRepository.findById("123")).thenReturn(Optional.of(basement));
             when(storageRepository.findById("1")).thenReturn(Optional.empty());
-            when(ticketRepository.findById(anyString())).thenReturn(Optional.empty());
+            when(carRepository.findById(anyString())).thenReturn(Optional.empty());
             assertThrows(
                     NotFoundResourceException.class,
                     () -> basementService.takeCar("123", "test"),
-                    ExceptionMessage.NOT_FOUND_TICKET.getMessage());
+                    ExceptionMessage.NOT_FOUND_CAR.getMessage());
         }
 
         @Test

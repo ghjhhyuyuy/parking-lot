@@ -42,7 +42,8 @@ class StaffControllerTest {
     public void addStaffTest() throws Exception {
         String managerId = "b1e1946e-101c-403a-92fa-859081905dcf";
         String staff = "{\"id\":\""+managerId+"\",\"name\":\"Tom\",\"role\":\"3 \"}";
-        String result = mockMvc.perform(post("/staff").content(staff).contentType(MediaType.APPLICATION_JSON))
+        String result = mockMvc.perform(post("/staff").content(staff)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.removeDate", nullValue()))
                 .andExpect(jsonPath("$.code", is("200")))
                 .andExpect(status().isOk())
